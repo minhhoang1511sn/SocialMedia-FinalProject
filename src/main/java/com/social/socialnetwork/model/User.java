@@ -1,17 +1,14 @@
 package com.social.socialnetwork.model;
 
-import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -35,12 +32,15 @@ public class User implements UserDetails {
     private Date  birthday;
     private String gender;
     @DBRef
+    private List<Video> videos;
+    @DBRef
     private List<Image> images;
     @DBRef
     private List<Post> posts;
     @Enumerated(EnumType.STRING)
     private Role role;
     private Boolean Enabled;
+    private Boolean isActive;
     @Embedded
     @Transient
     private ConfirmationCode confirmationCode;

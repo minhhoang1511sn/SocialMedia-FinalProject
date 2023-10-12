@@ -26,6 +26,10 @@ public class Message {
     private UserMessage uSender;
     @Embedded
     private UserMessage uReceiver;
+    @Embedded
+    private Video video;
+    @Embedded
+    private Image image;
     private String message;
     private LocalDateTime createTime;
 }
