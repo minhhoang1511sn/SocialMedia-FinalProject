@@ -19,6 +19,8 @@ public class Page {
     private Long countMember;
     @Embedded
     private User admin;
+    @Embedded
+    private Image avatar;
     private String pageName;
     private String introduce;
     @DBRef

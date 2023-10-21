@@ -21,8 +21,8 @@ public class Video implements Serializable {
     private String videoLink;
     private PostType postType;
 
-    public Video(Object o, String imgLink) {
-        this.videoLink = imgLink;
+    public Video(Object o, String videoLink) {
+        this.videoLink = videoLink;
 //        this.post = post;
 
     }

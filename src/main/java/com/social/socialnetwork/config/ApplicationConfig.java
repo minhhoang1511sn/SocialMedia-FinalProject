@@ -22,9 +22,9 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+                .orElseGet(()->userRepository.findUserByPhone(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User Not Found")));
     }
-
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

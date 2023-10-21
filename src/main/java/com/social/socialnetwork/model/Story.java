@@ -15,7 +15,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "posts")
+@Document(collection = "story")
 public class Story {
     private String id;
     private long countLike;
