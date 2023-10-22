@@ -30,6 +30,8 @@ public class Post {
     private List<Comment> comments;
     @Field("images")
     private List<Image> images;
+    @Field("video")
+    private List<Video> videos;
     private Date createDate;
 
 }

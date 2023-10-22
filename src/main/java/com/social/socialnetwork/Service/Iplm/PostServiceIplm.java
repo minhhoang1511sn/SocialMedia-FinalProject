@@ -32,12 +32,13 @@ public class PostServiceIplm implements PostService {
     private final UserRepository userRepository;
     private final CloudinaryUpload cloudinaryUpload;
     private final ImageRepository imageRepository;
+    private final VideoRepository videoRepository;
     private final CommentRepository commentRepository;
     private final UserPostRepository userPostRepository;
     private final UserService userService;
     private final FriendService friendService;
     @Override
-    public Post createPost(PostReq postReq,  MultipartFile images)
+    public Post createPost(PostReq postReq,  MultipartFile images,  MultipartFile video)
     {
         String idCurrentUser = Utils.getIdCurrentUser();
         boolean check = userRepository.existsById(idCurrentUser);
@@ -66,6 +67,9 @@ public class PostServiceIplm implements PostService {
             userRepository.save(user);
             if(images!=null){
                 uploadImage(post.getId(), images);
+            }
+            if(video!=null){
+                uploadVideo(post.getId(), video);
             }
              postRepository.save(post);
              return post;
@@ -177,6 +181,43 @@ public class PostServiceIplm implements PostService {
         else
             return null;
 
+    }
+
+    @Override
+    public String uploadVideo(String postId, MultipartFile videos) {
+        String idCurrentUser = Utils.getIdCurrentUser();
+        boolean check = userRepository.existsById(idCurrentUser);
+        User user = userRepository.findUserById(idCurrentUser);
+        Video video = new Video();
+        Post post = postRepository.getById(postId);
+        if(check && post!=null){
+            try {
+                String url = cloudinaryUpload.uploadVideo(videos,null);
+                video.setVideoLink(url);
+                video.setPostType(post.getPostType());
+            } catch (IOException e) {
+                throw new AppException(400,"Failed");
+            }
+            ;
+            videoRepository.save(video);
+            List<Video> videoList = videoRepository.getAllVideoByPost(post);
+            videoList.add(video);
+            post.setVideos(videoList);
+            List<Video> videoUser = user.getVideos();
+            if(videoUser == null)
+            {
+                videoUser = new ArrayList<>();
+            }
+            videoUser.add(video);
+            user.setVideos(videoUser);
+            postRepository.save(post);
+            userRepository.save(user);
+            String url =video.getvideoLink();
+
+            return url;
+        }
+        else
+            return null;
     }
 
     @Override

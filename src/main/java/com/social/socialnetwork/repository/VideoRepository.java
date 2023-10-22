@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VideoRepository extends MongoRepository<VideoRepository,String> {
+public interface VideoRepository extends MongoRepository<Video,String> {
     @Query("{'user': ?0}")
     List<Video> getAllVideoByUser(User user);
     @Query("{'post': ?0}")
