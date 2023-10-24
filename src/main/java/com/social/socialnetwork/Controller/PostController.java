@@ -30,7 +30,7 @@ public class PostController {
     @PostMapping(value = "/post", consumes = {
             "multipart/form-data"})
     public ResponseEntity<?> createPost(@ModelAttribute  PostReq postReq,@RequestParam(value = "image", required =
-            false) MultipartFile image,@RequestParam(value = "video",required =false) MultipartFile video)
+            false) List<MultipartFile> image,@RequestParam(value = "video",required =false) List<MultipartFile> video)
             throws IOException {
         try {
             return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.createPost(postReq,image,video)));

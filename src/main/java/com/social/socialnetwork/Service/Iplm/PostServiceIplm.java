@@ -38,7 +38,7 @@ public class PostServiceIplm implements PostService {
     private final UserService userService;
     private final FriendService friendService;
     @Override
-    public Post createPost(PostReq postReq,  MultipartFile images,  MultipartFile video)
+    public Post createPost(PostReq postReq,  List<MultipartFile> images,  List<MultipartFile> video)
     {
         String idCurrentUser = Utils.getIdCurrentUser();
         boolean check = userRepository.existsById(idCurrentUser);
@@ -65,11 +65,23 @@ public class PostServiceIplm implements PostService {
             userPosts.add(post);
             user.setPosts(userPosts);
             userRepository.save(user);
+            List<Image> listImg = new ArrayList<>();
             if(images!=null){
-                uploadImage(post.getId(), images);
+                for(MultipartFile image :images)
+                {
+                    Image img = uploadImage(post.getId(), image);
+                    listImg.add(img);
+                }
+                post.setImages(listImg);
             }
+            List<Video> videoList = new ArrayList<>();
             if(video!=null){
-                uploadVideo(post.getId(), video);
+                for(MultipartFile v :video)
+                {
+                    Video vd =uploadVideo(post.getId(), v);
+                    videoList.add(vd);
+                }
+                post.setVideos(videoList);
             }
              postRepository.save(post);
              return post;
@@ -146,7 +158,7 @@ public class PostServiceIplm implements PostService {
             throw new AppException(400,"Post does not exists");
     }
     @Override
-    public String uploadImage(String postId, MultipartFile images) {
+    public Image uploadImage(String postId, MultipartFile images) {
         String idCurrentUser = Utils.getIdCurrentUser();
         boolean check = userRepository.existsById(idCurrentUser);
         User user = userRepository.findUserById(idCurrentUser);
@@ -163,7 +175,11 @@ public class PostServiceIplm implements PostService {
             ;
             imageRepository.save(image);
             List<Image> imageList = imageRepository.getAllImageByPost(post);
-                imageList.add(image);
+            if(imageList == null || (long) imageList.size() ==0)
+            {
+                imageList = new ArrayList<>();
+            }
+            imageList.add(image);
             post.setImages(imageList);
             List<Image> imageUser = user.getImages();
             if(imageUser == null)
@@ -174,9 +190,8 @@ public class PostServiceIplm implements PostService {
             user.setImages(imageUser);
             postRepository.save(post);
             userRepository.save(user);
-            String url =image.getImgLink();
-
-            return url;
+            //String url =image.getImgLink();
+            return image;
         }
         else
             return null;
@@ -184,7 +199,7 @@ public class PostServiceIplm implements PostService {
     }
 
     @Override
-    public String uploadVideo(String postId, MultipartFile videos) {
+    public Video uploadVideo(String postId, MultipartFile videos) {
         String idCurrentUser = Utils.getIdCurrentUser();
         boolean check = userRepository.existsById(idCurrentUser);
         User user = userRepository.findUserById(idCurrentUser);
@@ -201,6 +216,10 @@ public class PostServiceIplm implements PostService {
             ;
             videoRepository.save(video);
             List<Video> videoList = videoRepository.getAllVideoByPost(post);
+            if(videoList == null || (long) videoList.size() ==0)
+            {
+                videoList = new ArrayList<>();
+            }
             videoList.add(video);
             post.setVideos(videoList);
             List<Video> videoUser = user.getVideos();
@@ -212,9 +231,7 @@ public class PostServiceIplm implements PostService {
             user.setVideos(videoUser);
             postRepository.save(post);
             userRepository.save(user);
-            String url =video.getvideoLink();
-
-            return url;
+            return video;
         }
         else
             return null;
