@@ -22,6 +22,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.Calendar;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -111,7 +112,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
     public User register(RegisterReqest request) {
 
             if (!GenericValidator.isEmail(request.getEmail()))
+            {
                 throw new AppException(400, "Wrong email");
+            }
             boolean check = userRepository.existsByEmail(request.getEmail());
             if (check) {
                 throw new AppException(400,"Email already exits");
@@ -213,23 +216,47 @@ public class AuthenticationServiceIplm implements AuthenticationService {
     }
     @Override
     public AuthenticationResponse authenticate(AuthenticationReqest reqest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        reqest.getEmail(),
-                        reqest.getPassword()
-                )
-        );
-        var user = userRepository.findByEmail(reqest.getEmail())
-                .orElseThrow();
-        if(!user.getEnabled())
+        User user = null;
+        if(reqest.getPhone() != null || reqest.getEmail()!=null)
         {
-            throw new AppException(400,"User not authenticate");
+            if(reqest.getEmail()!=null)
+            {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                reqest.getEmail(),
+                                reqest.getPassword()
+                        )
+                );
+                user = userRepository.findByEmail(reqest.getEmail())
+                        .orElseThrow();
+            }
+            else if(reqest.getPhone()!=null)
+            {
+                String loginPhoneNumber = formatPhoneNumber(reqest.getPhone());
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginPhoneNumber,
+                                reqest.getPassword()
+                        )
+                );
+                user = userRepository.findUserByPhone(loginPhoneNumber)
+                        .orElseThrow();
+            }
+
+            if(!user.getEnabled())
+            {
+                throw new AppException(400,"User not authenticate");
+            }
+            else {
+                var jwtToken = jwtService.generateToken(user);
+                return AuthenticationResponse.builder()
+                        .token(jwtToken).build();
+            }
         }
         else {
-            var jwtToken = jwtService.generateToken(user);
-            return AuthenticationResponse.builder()
-                    .token(jwtToken).build();
+            return null;
         }
+
     }
     @Override
     public void saveVerificationCodeForUser(User users, String token) {

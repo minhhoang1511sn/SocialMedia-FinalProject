@@ -82,23 +82,40 @@ public class AuthenticationController {
                 null));
     }
 
-    @PostMapping("/register-email")
+    @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody RegisterReqest request
     ) throws TemplateException, MessagingException, IOException {
-         authenticationService.register(request);
-        User users = userRepository.findUserByEmail(request.getEmail());
-        String code = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-        authenticationService.saveVerificationCodeForUser(users,code);
+        if(request.getEmail()!=null)
+        {
+            authenticationService.register(request);
+            User users = userRepository.findUserByEmail(request.getEmail());
+            String code = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+            authenticationService.saveVerificationCodeForUser(users,code);
 
-        Map<String,Object> model = new HashMap<>();
-        model.put("code",code);
-        model.put("title", TITLE_SUBJECT_EMAIL);
-        model.put("subject", TITLE_SUBJECT_EMAIL);
-        emailService.sendEmail(request.getEmail(), model);
+            Map<String,Object> model = new HashMap<>();
+            model.put("code",code);
+            model.put("title", TITLE_SUBJECT_EMAIL);
+            model.put("subject", TITLE_SUBJECT_EMAIL);
+            emailService.sendEmail(request.getEmail(), model);
 
-        return ResponseEntity.ok(new ResponseDTO(true,"Sending email",
-                null));
+            return ResponseEntity.ok(new ResponseDTO(true,"Sending email",
+                    null));
+        }
+       else if(request.getPhone()!=null)
+        {
+            UserReq u =new UserReq();
+            u.setPhone(request.getPhone());
+            u.setLastName(request.getLastName());
+            u.setFirstName(request.getFirstName());
+            u.setPassword(request.getPassword());
+            return ResponseEntity.ok(new ResponseDTO(true,"Sending OTP",
+                    authenticationService.registerByPhone(u, "+84")));
+        }
+       else {
+            return ResponseEntity.badRequest().body(new ResponseDTO(false,"email or phone is wrong",
+                    null));
+        }
     }
     @RequestMapping(value = "/verifyRegistration", method = RequestMethod.POST)
     public ResponseEntity<?> verifyRegistration(@RequestParam String code,
@@ -144,12 +161,9 @@ public class AuthenticationController {
             @RequestBody AuthenticationReqest request
     )
     {
-        if(userRepository.findByEmail(request.getEmail()).isPresent())
-        {   if(authenticationService.authenticate(request) != null)
+          if(authenticationService.authenticate(request) != null)
             return ResponseEntity.ok(authenticationService.authenticate(request));
-            else return  ResponseEntity.ok("Email is not authenticate");
-        }
-        else return  ResponseEntity.ok("Email is not Exists");
+            else return  ResponseEntity.ok("Email or Phone Number is not authenticate");
     }
     @PostMapping("/authenticate-by-phone")
     public ResponseEntity<?> authenticateByPhone(@RequestBody PhoneLoginRequest request)

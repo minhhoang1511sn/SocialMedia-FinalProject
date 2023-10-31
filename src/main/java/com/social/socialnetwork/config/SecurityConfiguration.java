@@ -20,7 +20,7 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private static final String[] WHITE_LIST_URLS = {
-            "/api/v1/auth/register-email",
+            "/api/v1/auth/register",
             "/api/v1/auth/verifyRegistration",
             "/api/v1/auth/resetPassword",
             "/api/v1/auth/authenticate",
