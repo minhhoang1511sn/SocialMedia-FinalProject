@@ -7,6 +7,7 @@ import com.social.socialnetwork.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,7 +16,8 @@ public interface UserService {
      List<User> findAllUser();
      User updateUser(UserReq userReq);
      User findUserByEmail(String email);
-     List<User> findUserByUserName(String query);
+     User findUserByPhone(String phone);
+     ArrayList<Object> findUserByUserName(String query);
      void changePassword(User user, String newPassword);
      ConfirmationCode SendVerifyCode(String email);
      boolean disabledUser(String id);

@@ -20,6 +20,8 @@ public interface AuthenticationService {
 
      User saveRegister(UserReq userReq, String prefix);
 
+     String resetPassReqByPhone(UserReq userReq, String prefix);
+
      String registerByPhone(UserReq userReq, String prefix);
 
      AuthenticationResponse authenticatebyPhone(PhoneLoginRequest request);

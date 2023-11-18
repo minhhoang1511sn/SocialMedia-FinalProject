@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,7 @@ public class UserController {
     @GetMapping("/search-user")
     public ResponseEntity<?> getUserByName(@RequestParam("query") String query){
 
-        List<User> user = userService.findUserByUserName(query);
+        ArrayList<Object> user = userService.findUserByUserName(query);
         return ResponseEntity.ok().body(user);
     }
     @PutMapping("/user")

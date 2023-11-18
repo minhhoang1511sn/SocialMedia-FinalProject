@@ -17,4 +17,6 @@ public class Report {
     private User user;
     @Embedded
     private Post post;
+    @Embedded
+    private Comment comment;
 }

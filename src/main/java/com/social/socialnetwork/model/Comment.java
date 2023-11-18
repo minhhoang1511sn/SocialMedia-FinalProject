@@ -26,5 +26,15 @@ public class Comment {
     private Post post;
     private Double rate;
     private Date createTime;
+    @DBRef
+    @Transient
+    private Comment parentComment;
+    private Long numReply;
+    @DBRef
+    @Transient
+    private Image image;
+    @DBRef
+    @Transient
+    private Video video;
 
 }

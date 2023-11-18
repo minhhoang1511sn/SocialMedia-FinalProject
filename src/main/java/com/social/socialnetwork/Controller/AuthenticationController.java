@@ -152,6 +152,14 @@ public class AuthenticationController {
             return ResponseEntity.ok(new ResponseDTO(true,"Sent email reset verify code",
                     null));
         }
+         user = userService.findUserByPhone(passwordDTO.getPhone());
+         if(user!=null && user.getEnabled()){
+             UserReq u =new UserReq();
+             u.setPhone(passwordDTO.getPhone());
+
+             return ResponseEntity.ok(new ResponseDTO(true,"Sending OTP",
+                     authenticationService.resetPassReqByPhone(u, "+84")));
+         }
         return ResponseEntity.badRequest().body(new ResponseDTO(false,"Not found email",
                 null));
     }

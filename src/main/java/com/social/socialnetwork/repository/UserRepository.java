@@ -12,8 +12,11 @@ import java.util.Optional;
 public interface  UserRepository  extends MongoRepository<User, String> {
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
-    @Query("{'email' : ?0}")
+    @Query("{'email' : { $lt: ?0 }}")
     User findUserByEmail(String email);
+
+    @Query("{'phone' : { $lt: ?0 }}")
+    User findByPhone(String phone);
     @Query("{$and: [{ 'firstName': { $regex: ?0, $options: 'i' } }, { 'lastName': { $regex: ?0, $options: 'i' } }]}")
     List<User> findByFirstNameAndLastName(String query);
     User findUserById(String id);

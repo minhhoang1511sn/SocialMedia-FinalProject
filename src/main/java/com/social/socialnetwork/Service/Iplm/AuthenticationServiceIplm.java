@@ -22,7 +22,6 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.Calendar;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -152,6 +151,42 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         user.setAddress(userReq.getAddress());
 
         return userRepository.save(user);
+    }
+    @Override
+    public String resetPassReqByPhone(UserReq userReq, String prefix) {
+        // Get Utility Instance
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        // +84 + 091913123213
+        String phoneNo = userReq.getPhone();
+        phoneNo = phoneNo.substring(1);
+        String originalNum =  prefix + phoneNo;
+        // if phone number is valid
+        if(userRepository.existsByPhone(originalNum)){
+            if(phoneNumberUtil.isPossibleNumber(originalNum, prefix)){
+                //Format the number
+                Phonenumber.PhoneNumber numberProto = new Phonenumber.PhoneNumber();
+                try {
+                    numberProto = phoneNumberUtil.parse(originalNum, "VN");
+                } catch (NumberParseException e) {
+                    System.err.println("NumberParseException was thrown: " + e);
+                }
+
+                String formattedNum = phoneNumberUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
+               User user = userRepository.findByPhone(formattedNum);
+                //Send Token
+                String token = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+                saveVerificationCodeForUser(user,token);
+                twillioService.sendSMS(formattedNum, token);
+
+                return formattedNum;
+            }
+            else{
+                return null;
+            }
+        }
+        else{
+            return null;
+        }
     }
     @Override
     public String registerByPhone(UserReq userReq, String prefix) {
@@ -290,12 +325,18 @@ public class AuthenticationServiceIplm implements AuthenticationService {
     public User validateVerificationCodetoResetPassword(PasswordDTO passwordDTO) {
         ConfirmationCode verificationCode
                 = confirmationCodeRepository.findVerificationCodeByCodeAndUser_Email(passwordDTO.getVerifyCode(), passwordDTO.getEmail());
-
         if (verificationCode == null) {
-            throw new AppException(400,"User not validated");
+            verificationCode
+                    = confirmationCodeRepository.findConfirmationCodeByCodeAndUserPhone(passwordDTO.getVerifyCode(), passwordDTO.getPhone());
+            if (verificationCode == null) {
+                throw new AppException(400, "User not validated");
+            }
         }
 
         User user = userRepository.findUserByEmail(passwordDTO.getEmail());
+        if(user==null){
+            user = userRepository.findByPhone(passwordDTO.getPhone());
+        }
             verificationCode.setToken(null);
             confirmationCodeRepository.save(verificationCode);
             user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));

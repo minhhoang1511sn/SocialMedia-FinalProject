@@ -31,6 +31,7 @@ public class UserServiceIplm implements UserService {
     private final UserCommentRepository userCommentRepository;
     private final UserPostRepository userPostRepository;
     private final UserMessageRepository userMessageRepository;
+    private final PageRepository pageRepository;
     @Override
     public User findById(String id) {
         User user = userRepository.findUserById(id);
@@ -94,17 +95,34 @@ public class UserServiceIplm implements UserService {
     }
     @Override
     public User findUserByEmail(String email){
+        if(email!=null)
         return userRepository.findUserByEmail(email);
+        else return null;
     }
+
     @Override
-    public List<User> findUserByUserName(String query){
+    public User findUserByPhone(String phone) {
+        if(phone!=null)
+        return userRepository.findByPhone(phone);
+        else return null;
+    }
+
+    @Override
+    public ArrayList<Object> findUserByUserName(String query){
 
         List<User> user = userRepository.findByFirstNameAndLastName(query);
-        List<User> result = new ArrayList<>();
+        List<Page> page = pageRepository.findByPageByPageName(query);
+        ArrayList<Object> result = new ArrayList<>();
         user.forEach(u->{
             if(u.getEnabled()==true)
             {
                 result.add(u);
+            }
+        });
+        page.forEach(p->{
+            if(p.getAdmin().getEnabled()==true)
+            {
+                result.add(p);
             }
         });
         return result;

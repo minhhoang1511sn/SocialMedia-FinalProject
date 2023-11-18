@@ -1,5 +1,7 @@
 package com.social.socialnetwork.Service.Iplm;
 
+import com.social.socialnetwork.model.Comment;
+import com.social.socialnetwork.repository.CommentRepository;
 import com.social.socialnetwork.utils.Utils;
 import com.social.socialnetwork.Service.ReportService;
 import com.social.socialnetwork.dto.ReportReq;
@@ -14,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -22,19 +26,28 @@ public class ReportServiceIplm implements ReportService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ReportRepository reportRepository;
+    private final CommentRepository commentRepository;
     @Override
     public Report createReport(ReportReq reportReq) {
         User user = userRepository.findUserById(Utils.getIdCurrentUser());
         Post post = postRepository.getById(reportReq.getPostId());
-        if(user!=null && post!=null){
+        Comment comment = commentRepository.getById(reportReq.getCommentId());
+        if(user!=null && post!=null || user!=null && comment!=null){
             Report report = new Report();
             report.setContentReport(reportReq.getContentReport());
             report.setUser(user);
             report.setPost(post);
+            report.setComment(comment);
             reportRepository.save(report);
             return report;
         } else {
             throw new AppException(404, "Post or Comment not exits.");
         }
     }
+    public List<Report> getAllReport()
+    {
+        return reportRepository.findAll();
+    }
+
+
 }

@@ -1,8 +1,10 @@
 package com.social.socialnetwork.Controller;
 
 import com.social.socialnetwork.Service.CommentService;
+import com.social.socialnetwork.Service.SubCommentService;
 import com.social.socialnetwork.dto.CommentReq;
 import com.social.socialnetwork.dto.ResponseDTO;
+import com.social.socialnetwork.dto.SubCommentReq;
 import com.social.socialnetwork.model.Comment;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -21,6 +24,7 @@ import java.io.IOException;
 @CrossOrigin(origins ="http://localhost:3000")
 public class CommentController {
     private final CommentService commentService;
+    private final SubCommentService subCommentService;
 
     @GetMapping("/list-comment")
     public ResponseEntity<?> getListCommentByPost(@RequestParam String postid){
@@ -49,4 +53,28 @@ public class CommentController {
         Comment commentUpdate = commentService.updateComment(commentReq);
         return ResponseEntity.ok(new ResponseDTO(true,"Success",commentUpdate));
     }
+    @PostMapping("comment/subcomment")
+    public ResponseEntity<?> createSubComment(@RequestBody SubCommentReq subCommentReq) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", subCommentService.createSubComment(subCommentReq)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+    }
+    @GetMapping("/subcomment/{commentParentId}")
+    public ResponseEntity<?> findSubCommetByParentCommentId(@PathVariable final String commentParentId) {
+        List<Comment> subComment = subCommentService.findSubCommetByParentCommentId(commentParentId);
+        if (subComment != null) {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", subComment));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseDTO(false, "Not found", null));
+
+    }
+    @PutMapping("/comment/{parentId}")
+    public ResponseEntity<?> updateSubComment(@PathVariable final String parentId,@RequestBody SubCommentReq subCommentReq){
+        Comment commentUpdate = subCommentService.updateSubComment(parentId, subCommentReq);
+        return ResponseEntity.ok(new ResponseDTO(true,"Success",commentUpdate));
+    }
+
 }

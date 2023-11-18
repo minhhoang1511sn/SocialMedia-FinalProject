@@ -58,6 +58,7 @@ public class PostServiceIplm implements PostService {
             post.setUserPost(userPost);
             post.setCreateDate(new Date());
             postRepository.save(post);
+
             List<Post> userPosts = user.getPosts();
             if(userPosts == null){
                 userPosts = new ArrayList<>();
@@ -82,6 +83,10 @@ public class PostServiceIplm implements PostService {
                     videoList.add(vd);
                 }
                 post.setVideos(videoList);
+            }
+            List<User> userTags = new ArrayList<>();
+            if(userTags != null){
+                post.setUsertags(userTags);
             }
              postRepository.save(post);
              return post;
@@ -150,7 +155,8 @@ public class PostServiceIplm implements PostService {
             postUpdate.setContent(postReq.getContent());
             postUpdate.setUserPost(u);
             postUpdate.setComments(commentList);
-            postUpdate.setCreateDate(new Date());
+            Date now = new Date();
+            postUpdate.setCreateDate(new Date(now.getTime() - postReq.getCreateDate().getTime()));
             postUpdate.setPostType(postType);
             return postRepository.save(postUpdate);
         }

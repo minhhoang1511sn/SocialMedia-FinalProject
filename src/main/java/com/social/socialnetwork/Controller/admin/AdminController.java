@@ -1,5 +1,6 @@
 package com.social.socialnetwork.Controller.admin;
 
+import com.social.socialnetwork.Service.ReportService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
+    private final ReportService reportService;
 
     @PutMapping("/disable-user/{id}")
     public ResponseEntity<?> DisabledUser(@PathVariable String id){
@@ -31,5 +33,11 @@ public class AdminController {
         else
             return  ResponseEntity.ok().body(new ResponseDTO(false,"User cannot enabled",
                     null));
+    }
+    @PutMapping("/Reports/")
+    public ResponseEntity<?> GetAllReport(){
+
+            return  ResponseEntity.ok().body(new ResponseDTO(true,"",
+                    reportService.getAllReport()));
     }
 }

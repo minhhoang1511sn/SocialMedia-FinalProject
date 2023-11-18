@@ -10,5 +10,5 @@ public class PasswordDTO {
     private String verifyCode;
     private String oldPassword;
     private String newPassword;
-
+    private String phone;
 }

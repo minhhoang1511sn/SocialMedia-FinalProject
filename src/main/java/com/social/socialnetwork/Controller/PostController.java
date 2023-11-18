@@ -10,6 +10,7 @@ import com.social.socialnetwork.repository.PostRepository;
 import com.social.socialnetwork.utils.Utils;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,11 @@ public class PostController {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }
 
+    }
+    @GetMapping(path="/")
+    public String getURLPost(HttpServletRequest httpServletRequest) {
+        String link = String.valueOf(httpServletRequest.getRequestURL());
+        return "index";
     }
     @PutMapping(value = "/update-post", consumes = {
             "multipart/form-data"})
