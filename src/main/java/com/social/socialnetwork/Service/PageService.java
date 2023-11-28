@@ -6,4 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PageService {
     Page createPage(PageReq pageReq,  MultipartFile images);
+    boolean enabledPage(PageReq pageReq);
 }
