@@ -9,10 +9,10 @@ import java.util.Date;
 public class PageReq {
     private String id;
     private Long countMember;
-
     private String admin;
     private String pageName;
     private String introduce;
     private Date createTime;
     private String avatar;
+    private Boolean enabled;
 }
