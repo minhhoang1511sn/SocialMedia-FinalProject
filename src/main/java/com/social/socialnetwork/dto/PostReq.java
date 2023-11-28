@@ -17,4 +17,5 @@ public class PostReq {
     private String content;
     private PostType postType;
     private Date createDate;
+    private String pageId;
 }

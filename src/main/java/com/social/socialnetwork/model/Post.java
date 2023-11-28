@@ -1,12 +1,7 @@
 package com.social.socialnetwork.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Reference;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -26,6 +21,8 @@ public class Post {
     private PostType postType;
     @Embedded
     private UserPost userPost;
+    @Embedded
+    private Page page;
     @Field("userTags")
     private List<User> usertags;
     @Field("comments")

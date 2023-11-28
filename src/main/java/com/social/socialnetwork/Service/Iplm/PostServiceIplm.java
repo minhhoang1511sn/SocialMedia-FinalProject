@@ -37,6 +37,7 @@ public class PostServiceIplm implements PostService {
     private final UserPostRepository userPostRepository;
     private final UserService userService;
     private final FriendService friendService;
+    private final PageRepository pageRepository;
     @Override
     public Post createPost(PostReq postReq,  List<MultipartFile> images,  List<MultipartFile> video)
     {
@@ -56,7 +57,13 @@ public class PostServiceIplm implements PostService {
             post.setCountLike(0L);
             post.setPostType(PostType.PUBLIC);
             post.setUserPost(userPost);
-            post.setCreateDate(new Date());
+            Date now = new Date();
+            post.setCreateDate(new Date(now.getTime()));
+            if(postReq.getPageId()!=null)
+            {
+                Page p = pageRepository.getById(postReq.getPageId());
+                post.setPage(p);
+            }
             postRepository.save(post);
 
             List<Post> userPosts = user.getPosts();
@@ -155,8 +162,13 @@ public class PostServiceIplm implements PostService {
             postUpdate.setContent(postReq.getContent());
             postUpdate.setUserPost(u);
             postUpdate.setComments(commentList);
+            if(postReq.getPageId()!=null)
+            {
+                Page p = pageRepository.getById(postReq.getPageId());
+                postUpdate.setPage(p);
+            }
             Date now = new Date();
-            postUpdate.setCreateDate(new Date(now.getTime() - postReq.getCreateDate().getTime()));
+            postUpdate.setCreateDate(new Date(now.getTime() - (postReq.getCreateDate()!= null  ?postReq.getCreateDate().getTime() : 0) ));
             postUpdate.setPostType(postType);
             return postRepository.save(postUpdate);
         }
@@ -188,12 +200,26 @@ public class PostServiceIplm implements PostService {
             imageList.add(image);
             post.setImages(imageList);
             List<Image> imageUser = user.getImages();
-            if(imageUser == null)
-            {
-                imageUser = new ArrayList<>();
+
+            if(post.getPage()!=null){
+                List<Image> imagePage = user.getImages();
+                Page p = post.getPage();
+                if(imagePage == null)
+                {
+                    imagePage = new ArrayList<>();
+                }
+                imagePage.add(image);
+                p.setImages(imagePage);
             }
-            imageUser.add(image);
-            user.setImages(imageUser);
+            else{
+                if(imageUser == null)
+                {
+                    imageUser = new ArrayList<>();
+                }
+                imageUser.add(image);
+                user.setImages(imageUser);
+            }
+
             postRepository.save(post);
             userRepository.save(user);
             //String url =image.getImgLink();
@@ -228,13 +254,28 @@ public class PostServiceIplm implements PostService {
             }
             videoList.add(video);
             post.setVideos(videoList);
-            List<Video> videoUser = user.getVideos();
-            if(videoUser == null)
-            {
-                videoUser = new ArrayList<>();
+
+
+            if(post.getPage()!=null){
+                List<Video> videoPage = user.getVideos();
+                Page p = post.getPage();
+                if(videoPage == null)
+                {
+                    videoPage = new ArrayList<>();
+                }
+                videoPage.add(video);
+                p.setVideos(videoPage);
             }
-            videoUser.add(video);
-            user.setVideos(videoUser);
+            else{
+                List<Video> videoUser = user.getVideos();
+                if(videoUser == null)
+                {
+                    videoUser = new ArrayList<>();
+                }
+                videoUser.add(video);
+                user.setVideos(videoUser);
+            }
+
             postRepository.save(post);
             userRepository.save(user);
             return video;
