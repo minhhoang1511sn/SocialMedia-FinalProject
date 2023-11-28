@@ -30,7 +30,7 @@ public class PageServiceIplm implements PageService {
     public Page createPage(PageReq pageReq, MultipartFile images) {
         String idCurrentUser = Utils.getIdCurrentUser();
         User user = userRepository.findUserById(idCurrentUser);
-        if (user != null && user.getPage() == null) {
+        if (user != null && pageRepository.findByPageByAdmin(user) == null) {
             Page page = new Page();
             page.setPageName(page.getPageName());
             page.setAdmin(user);
@@ -55,7 +55,7 @@ public class PageServiceIplm implements PageService {
             pageRepository.save(page);
             return page;
         } else {
-            throw new AppException(404, "Product or Comment not exits.");
+            throw new AppException(404, "You are already admin 1 page");
         }
 
     }

@@ -15,7 +15,8 @@ import java.util.List;
 public interface PageRepository extends MongoRepository<Page,String> {
     @Query("{'pageName' : ?0}")
     List<Page> findByPageByPageName(String query);
-
+    @Query("{'admin' : ?0}")
+    Page findByPageByAdmin(User admin);
     Page getById(String pageId);
 
 }

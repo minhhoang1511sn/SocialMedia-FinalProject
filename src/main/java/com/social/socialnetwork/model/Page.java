@@ -30,4 +30,5 @@ public class Page {
     @DBRef
     private List<Video> videos;
     private Date  createTime;
+    private boolean enabled;
 }
