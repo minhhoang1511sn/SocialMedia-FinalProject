@@ -5,6 +5,7 @@ import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.StoryReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
+import com.social.socialnetwork.repository.PageRepository;
 import com.social.socialnetwork.repository.StoryRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
@@ -20,6 +21,7 @@ public class StoryServiceIplm implements StoryService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final StoryRepository storyRepository;
+    private final PageRepository pageRepository;
     @Override
     public Story createStory(StoryReq storyReq, MultipartFile images) {
         String idCurrentUser = Utils.getIdCurrentUser();
@@ -32,6 +34,10 @@ public class StoryServiceIplm implements StoryService {
            story.setEnabled(true);
            story.setCountUserWatched(0);
            story.setPostType(PostType.valueOf(storyReq.getPostType()));
+           if(storyReq.getPageId()!=null){
+               Page p = pageRepository.getById(storyReq.getPageId());
+               story.setPage(p);
+           }
             if(storyReq.getImage()!=null)
             {
                 Image image = new Image();

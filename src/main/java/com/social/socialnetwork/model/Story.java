@@ -25,6 +25,8 @@ public class Story {
     private User user;
     private boolean enabled;
     @Embedded
+    private Page page;
+    @Embedded
     private Image image;
     @Embedded
     private Video video;

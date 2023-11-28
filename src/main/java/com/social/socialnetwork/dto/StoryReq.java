@@ -13,4 +13,5 @@ public class StoryReq {
     private String video;
     private Date createTime;
     private long countUserWatched;
+    private String pageId;
 }
