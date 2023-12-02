@@ -31,4 +31,16 @@ public class StoryController {
         }
 
     }
+
+    @PutMapping( "/story")
+    public ResponseEntity<?> disabledStory(@ModelAttribute StoryReq storyReq)
+            throws IOException {
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success",
+                    storyService.disabledStory(storyReq)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+
+    }
 }

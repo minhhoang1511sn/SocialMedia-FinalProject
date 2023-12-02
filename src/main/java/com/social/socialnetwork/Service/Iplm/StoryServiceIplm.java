@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +58,19 @@ public class StoryServiceIplm implements StoryService {
         } else {
             throw new AppException(404, "Story not exits.");
         }
+    }
+
+    @Override
+    public boolean disabledStory(StoryReq storyReq) {
+        Date now = new Date();
+        if(TimeUnit.MILLISECONDS.toDays(now.getTime() - storyReq.getCreateTime().getTime())== 1)
+        {
+            Story story = new Story();
+            story.setEnabled(true);
+            storyRepository.save(story);
+            return false;
+        }
+
+        return true;
     }
 }
