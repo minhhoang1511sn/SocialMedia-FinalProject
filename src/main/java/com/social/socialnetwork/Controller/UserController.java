@@ -77,6 +77,7 @@ public class UserController {
         List<User> friendList = friendService.getUserFriends(userId);
         return ResponseEntity.ok().body(new ResponseDTO(true,"Success",friendList));
     }
+
     @GetMapping("/is-Friend")
     public ResponseEntity<?> getIsFriend(@RequestParam("friendId") String friendId){
         User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
@@ -94,13 +95,17 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
     @PostMapping("/add-friend")
-    public ResponseEntity<?> addFriend( @RequestParam("friendId")String friendId){
+    public ResponseEntity<?> addFriend( @RequestParam("friendId") String friendId){
         User  currentUser = userService.findById(Utils.getIdCurrentUser());
+        User  friendUser = userService.findById(friendId);
         friendService.saveFriend(currentUser,friendId);
+        if(friendService.isFriend(currentUser,friendUser))
         return ResponseEntity.ok("Friend added successfully");
+        else
+            return ResponseEntity.ok("FriendRequest is sent");
     }
     @DeleteMapping("/un-friend")
-    public ResponseEntity<?> unFriend( @RequestParam("friendId")String friendId){
+    public ResponseEntity<?> unFriend( @RequestParam("friendId") String friendId){
         if (friendService.unFriend(friendId)){
             return ResponseEntity.ok(new ResponseDTO(true, "Success", null));
         }
@@ -129,6 +134,12 @@ public class UserController {
     @GetMapping("/suggest-friend")
     public ResponseEntity<?> getSuggestFriend(){
         List<User> suggestFriend = friendService.suggestFriend();
+        return ResponseEntity.ok().body(new ResponseDTO(true,"Success",suggestFriend));
+    }
+
+    @GetMapping("/request-friend")
+    public ResponseEntity<?> getRequestFriend(){
+        List<User> suggestFriend = friendService.getUserRequestFriends(Utils.getIdCurrentUser());
         return ResponseEntity.ok().body(new ResponseDTO(true,"Success",suggestFriend));
     }
 }

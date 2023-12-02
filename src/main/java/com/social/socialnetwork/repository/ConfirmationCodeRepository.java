@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ConfirmationCodeRepository extends MongoRepository<ConfirmationCode,String> {
 
-    ConfirmationCode findVerificationCodeByCodeAndUser_Email(String code, String email);
+    ConfirmationCode findVerificationCodeByCodeAndUserEmail(String code, String email);
     ConfirmationCode findVerificationCodeByUserEmail(String email);
 
     ConfirmationCode findVerificationTokenByUserId(String uid);

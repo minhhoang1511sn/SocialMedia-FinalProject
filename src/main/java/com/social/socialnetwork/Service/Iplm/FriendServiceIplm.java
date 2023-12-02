@@ -1,21 +1,16 @@
 package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.FriendService;
-import com.social.socialnetwork.Service.UserService;
-import com.social.socialnetwork.dto.UserReq;
 import com.social.socialnetwork.model.Friend;
 import com.social.socialnetwork.model.User;
 import com.social.socialnetwork.repository.FriendRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +24,7 @@ public class FriendServiceIplm implements FriendService {
 
     private final UserRepository userRepository;
 
+
     @Override
     public User findById(String id) {
         Optional<User> user = userRepository.findById(id);
@@ -40,17 +36,27 @@ public class FriendServiceIplm implements FriendService {
     @Override
     public List<User> getUserFriends(String id){
         User currentUser = userRepository.findUserById(id);
-        List<Friend> friendsByFirstUser = friendRepository.findByFirstUser(currentUser);
-        List<Friend> friendsBySecondUser = friendRepository.findBySecondUser(currentUser);
+        List<String> friends =currentUser.getUserFriend();
+
         List<User> friendUsers = new ArrayList<>();
-        for (Friend friend : friendsByFirstUser) {
-            friendUsers.add(userRepository.findUserById(friend.getSecondUser().getId()));
-        }
-        for (Friend friend : friendsBySecondUser) {
-            friendUsers.add(userRepository.findUserById(friend.getFirstUser().getId()));
+        for (String friend : friends) {
+            friendUsers.add(userRepository.findUserById(friend));
         }
         return friendUsers;
     }
+
+    @Override
+    public List<User> getUserRequestFriends(String id) {
+        User user = userRepository.findUserById(id);
+        List <User> userReq = new ArrayList<>();
+        List<String> userReqId = user.getUserRequest();
+
+        for(int i = 0; i< userReqId.size();i++){
+            userReq.add(userRepository.findUserById(userReqId.get(i)));
+        }
+        return userReq;
+    }
+
 
     @Override
     public List<User> suggestFriend() {
@@ -70,39 +76,63 @@ public class FriendServiceIplm implements FriendService {
 
     @Override
     public void saveFriend(User userDto1, String id) throws NullPointerException{
-        Friend friend = new Friend();
+
         User UserFriend = userRepository.findUserById(id);
-        User curUser = userRepository.findUserByEmail(userDto1.getEmail());
-        User friendUser = userRepository.findUserByEmail(UserFriend.getEmail());
-        User firstuser = curUser;
-        User seconduser = friendUser;
-//        if(curUser.getId() > friendUser.getId()){
-//            firstuser = friendUser;
-//            seconduser = curUser;
-//        }
-        if( !(friendRepository.existsByFirstUserAndSecondUser(firstuser,seconduser)) ){
-            friend.setAccept(true);
-            friend.setCreatedDate(new Date());
-            friend.setFirstUser(firstuser);
-            friend.setSecondUser(seconduser);
-            friendRepository.save(friend);
+        User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
+        if(!isFriend(curUser,UserFriend))
+        {
+            if(UserFriend.getUserRequest() == null){
+                UserFriend.setUserRequest(new ArrayList<>());
+            }
+            if(curUser.getUserRequest() == null){
+                curUser.setUserRequest(new ArrayList<>());
+            }
+            List<String> userFrReq =  UserFriend.getUserRequest();
+            List<String> userReq =  curUser.getUserRequest();
+            boolean check1 =userFrReq.contains(curUser.getId());
+            boolean check2 = userReq.contains(UserFriend.getId());
+            if(!check1 && !check2)
+            {
+                List<String> UserFriendReq =  UserFriend.getUserRequest();
+                UserFriendReq.add(curUser.getId());
+                UserFriend.setUserRequest(UserFriendReq);
+                userRepository.save(UserFriend);
+            } else {
+                List<String> curFriend = new ArrayList<>();
+                List<String> uFrFriend = new ArrayList<>();
+                List<String> curUserReq = curUser.getUserRequest();
+                if(curUser.getUserFriend() != null)
+                {
+                    curUser.setUserFriend(curUser.getUserFriend());
+                }
+                if(UserFriend.getUserFriend() != null)
+                {
+                    UserFriend.setUserFriend(UserFriend.getUserFriend());
+                }
+                curUserReq.remove(UserFriend.getId());
+                curFriend.add(UserFriend.getId());
+                uFrFriend.add(curUser.getId());
+                curUser.setUserFriend(curFriend);
+                UserFriend.setUserFriend(uFrFriend);
+                curUser.setUserRequest(curUserReq);
+                userRepository.save(curUser);
+                userRepository.save(UserFriend);
+            }
         }
     }
     @Override
     public Boolean isFriend(User user1, User user2){
         User UserFriend = userRepository.findUserById(user2.getId());
-        User curUser = userRepository.findUserByEmail(user1.getEmail());
-        User friendUser = userRepository.findUserByEmail(UserFriend.getEmail());
-        User firstuser = curUser;
-        User seconduser = friendUser;
-//        if(curUser.getId() > UserFriend.getId()){
-//            firstuser = friendUser;
-//            seconduser = curUser;
-//        }
-        Friend check = friendRepository.findByFirstUserAndSecondUser(firstuser,seconduser);
-            if(check!=null)
-            return  true;
-            else return false;
+        User curUser = userRepository.findUserById(user1.getId());
+        List<String> userFriend = UserFriend.getUserFriend();
+        List<String> curUserFriend = curUser.getUserFriend();
+        if(userFriend !=null && curUserFriend!=null)
+        {
+            if(userFriend.contains(curUser.getId()) && curUserFriend.contains(UserFriend.getId()))
+                return true;
+        }
+
+        return false;
     }
 
 
@@ -131,23 +161,19 @@ public class FriendServiceIplm implements FriendService {
     public boolean unFriend(String id) {
         User UserFriend = userRepository.findUserById(id);
         User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
-        User friendUser = userRepository.findUserByEmail(UserFriend.getEmail());
-        User firstuser = curUser;
-        User seconduser = friendUser;
-//        if(curUser.getId() > UserFriend.getId()){
-//            firstuser = friendUser;
-//            seconduser = curUser;
-//        }
-        if(friendRepository.existsByFirstUserAndSecondUser(firstuser,seconduser))
-        {
-           Friend deleteRelation =  friendRepository.findByFirstUserAndSecondUser(firstuser,seconduser);
-           deleteRelation.setFirstUser(null);
-           deleteRelation.setSecondUser(null);
-           friendRepository.save(deleteRelation);
-           friendRepository.deleteById(deleteRelation.getId());
-            return true;
-        }
-        else
+
+         if(isFriend(UserFriend,curUser))
+         {
+             List<String> curUserFr = curUser.getUserFriend();
+             List<String> friendUserFr = UserFriend.getUserFriend();
+             curUserFr.remove(UserFriend.getId());
+             friendUserFr.remove(curUser.getId());
+             curUser.setUserFriend(curUserFr);
+             UserFriend.setUserFriend(friendUserFr);
+             userRepository.save(curUser);
+             userRepository.save(UserFriend);
+             return true;
+         }
         return false;
     }
 }

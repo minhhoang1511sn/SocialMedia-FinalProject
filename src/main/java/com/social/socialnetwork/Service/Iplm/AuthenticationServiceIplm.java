@@ -301,30 +301,31 @@ public class AuthenticationServiceIplm implements AuthenticationService {
     }
     @Override
     public AuthenticationResponse validateVerificationCode(String code, String email) {
+        User userVeri = userRepository.findUserByEmail(email);
         ConfirmationCode verificationCode
-                = confirmationCodeRepository.findVerificationCodeByCodeAndUser_Email(code, email);
+                    = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(code, email);
 
         if (verificationCode == null) {
             throw new AppException(400,"User not validated");
         }
 
-        User user = verificationCode.getUser();
 
         verificationCode.setToken(null);
         confirmationCodeRepository.save(verificationCode);
-        user.setEnabled(true);
-        user.setRole(Role.USER);
-        userRepository.save(user);
+        userVeri.setEnabled(true);
+        userVeri.setRole(Role.USER);
+        userRepository.save(userVeri);
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(userVeri);
         return AuthenticationResponse.builder()
                 .token(jwtToken).build();
 
     }
     @Override
     public User validateVerificationCodetoResetPassword(PasswordDTO passwordDTO) {
+
         ConfirmationCode verificationCode
-                = confirmationCodeRepository.findVerificationCodeByCodeAndUser_Email(passwordDTO.getVerifyCode(), passwordDTO.getEmail());
+                = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(passwordDTO.getVerifyCode(), passwordDTO.getEmail());
         if (verificationCode == null) {
             verificationCode
                     = confirmationCodeRepository.findConfirmationCodeByCodeAndUserPhone(passwordDTO.getVerifyCode(), passwordDTO.getPhone());

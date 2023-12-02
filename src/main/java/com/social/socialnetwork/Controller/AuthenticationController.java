@@ -120,6 +120,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/verifyRegistration", method = RequestMethod.POST)
     public ResponseEntity<?> verifyRegistration(@RequestParam String code,
                                                 @RequestParam String email) {
+
         AuthenticationResponse result = authenticationService.validateVerificationCode(code,email);
         if(result==null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

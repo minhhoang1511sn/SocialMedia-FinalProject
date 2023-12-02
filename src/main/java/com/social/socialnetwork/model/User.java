@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +41,10 @@ public class User implements UserDetails {
     private List<Image> images;
     @DBRef
     private List<Post> posts;
+
+    private List<String> userFriend;
+    private List<String> userRequest;
+    private List<String> userRespone;
     @Enumerated(EnumType.STRING)
     private Role role;
     private Boolean Enabled;
