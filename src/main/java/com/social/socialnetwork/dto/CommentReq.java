@@ -12,4 +12,5 @@ public class CommentReq {
     private String userCommentId;
     private Image image;
     private String parentCommentId;
+    private String pageId;
 }

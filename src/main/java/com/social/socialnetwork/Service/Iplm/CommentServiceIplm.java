@@ -7,10 +7,7 @@ import com.social.socialnetwork.dto.CommentReq;
 import com.social.socialnetwork.dto.PostResp;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
-import com.social.socialnetwork.repository.CommentRepository;
-import com.social.socialnetwork.repository.PostRepository;
-import com.social.socialnetwork.repository.UserCommentRepository;
-import com.social.socialnetwork.repository.UserRepository;
+import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,6 +28,7 @@ public class CommentServiceIplm implements CommentService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final UserCommentRepository userCommentRepository;
+    private final PageRepository pageRepository;
 
     @Override
     public Comment findById(String id) {
@@ -50,8 +48,14 @@ public class CommentServiceIplm implements CommentService {
                 Post post = postRepository.findById(commentReq.getPostId()).orElse(null);
                 comment.setPost(post);
                 comment.setCreateTime(new Date());
+                if(commentReq.getPageId()!=null){
+                    Page p = pageRepository.getById(commentReq.getPageId());
+                    comment.setPage(p);
+                }
                 if(user.getImage()!=null)
-                userComment.setAvatar(user.getImage().getImgLink());
+                {
+                    userComment.setAvatar(user.getImage().getImgLink());
+                }
                 userComment.setFirstName(user.getFirstName());
                 userComment.setLastName(user.getLastName());
                 userComment.setUserId(user.getId());
@@ -84,6 +88,10 @@ public class CommentServiceIplm implements CommentService {
                commentUpdate.setContent(commentReq.getContent());
                commentUpdate.setUserComment(u);
                commentUpdate.setRate(commentReq.getRate());
+                if(commentReq.getPageId()!=null){
+                    Page p = pageRepository.getById(commentReq.getPageId());
+                    commentUpdate.setPage(p);
+                }
                 return commentUpdate;
             } else throw new AppException(404, "Comment ID not found");
         }

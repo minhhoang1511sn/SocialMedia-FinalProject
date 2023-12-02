@@ -1,13 +1,11 @@
 package com.social.socialnetwork.model;
 
-import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.util.List;
 
 @Document(collection = "comments")
 @Getter
@@ -20,6 +18,8 @@ public class Comment {
     private String id;
     @Embedded
     private UserComment userComment;
+    @Embedded
+    private Page page;
     private String content;
     @DBRef
     @Transient

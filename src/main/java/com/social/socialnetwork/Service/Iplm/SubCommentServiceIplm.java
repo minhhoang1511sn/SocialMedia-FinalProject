@@ -73,16 +73,18 @@ public class SubCommentServiceIplm implements SubCommentService {
 
     @Override
     public Comment updateSubComment(String id, SubCommentReq subCommentReq) {
-        Comment subCommentUpdate = findById(id);
-        if (subCommentUpdate == null) {
+        Comment subCommentParentUpdate = findById(id);
+        Comment SubCommentUpdate = null;
+        if (subCommentParentUpdate == null) {
             return null;
         }
         if (!StringUtils.isEmpty(subCommentReq.getContent())) {
-            subCommentUpdate.setContent(subCommentReq.getContent());
+             SubCommentUpdate = findById(subCommentReq.getId());
+            SubCommentUpdate.setContent(subCommentReq.getContent());
 
         }
 
-        return commentRepository.save(subCommentUpdate);
+        return commentRepository.save(SubCommentUpdate);
     }
 
 
