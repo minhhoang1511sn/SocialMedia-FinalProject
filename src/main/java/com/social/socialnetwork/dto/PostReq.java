@@ -18,4 +18,6 @@ public class PostReq {
     private PostType postType;
     private Date createDate;
     private String pageId;
+    private boolean enabled;
+
 }

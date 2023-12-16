@@ -13,10 +13,11 @@ import java.util.List;
 
 @Repository
 public interface PageRepository extends MongoRepository<Page,String> {
-    @Query("{'pageName' : ?0}")
+    @Query("{ 'pageName': { $regex: ?0, $options: 'i' } }")
     List<Page> findByPageByPageName(String query);
     @Query("{'admin' : ?0}")
     Page findByPageByAdmin(User admin);
     Page getById(String pageId);
-
+    @Query("{'enabled' : false}")
+    List<Page> getAllPageByEnabled();
 }

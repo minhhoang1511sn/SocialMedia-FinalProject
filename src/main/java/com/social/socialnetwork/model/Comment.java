@@ -37,4 +37,6 @@ public class Comment {
     @Transient
     private Video video;
 
+    private Boolean enabled;
+
 }

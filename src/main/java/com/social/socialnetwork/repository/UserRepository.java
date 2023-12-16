@@ -19,6 +19,7 @@ public interface  UserRepository  extends MongoRepository<User, String> {
     User findByPhone(String phone);
     @Query("{$and: [{ 'firstName': { $regex: ?0, $options: 'i' } }, { 'lastName': { $regex: ?0, $options: 'i' } }]}")
     List<User> findByFirstNameAndLastName(String query);
+
     User findUserById(String id);
     Optional<User> findUserByPhone(String phone);
     boolean existsByPhone(String phone);

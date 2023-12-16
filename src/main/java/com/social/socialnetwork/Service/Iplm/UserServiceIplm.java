@@ -3,6 +3,9 @@ package com.social.socialnetwork.Service.Iplm;
 import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
 import com.social.socialnetwork.Service.FriendService;
 import com.social.socialnetwork.Service.UserService;
+import com.social.socialnetwork.dto.CommentReq;
+import com.social.socialnetwork.dto.PageReq;
+import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.dto.UserReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
@@ -32,6 +35,9 @@ public class UserServiceIplm implements UserService {
     private final UserPostRepository userPostRepository;
     private final UserMessageRepository userMessageRepository;
     private final PageRepository pageRepository;
+    private final PostRepository postRepository;
+    private final ReportRepository reportRepository;
+    private final CommentRepository commentRepository;
     @Override
     public User findById(String id) {
         User user = userRepository.findUserById(id);
@@ -114,13 +120,13 @@ public class UserServiceIplm implements UserService {
         List<Page> page = pageRepository.findByPageByPageName(query);
         ArrayList<Object> result = new ArrayList<>();
         user.forEach(u->{
-            if(u.getEnabled()==true)
+            if(u.getEnabled())
             {
                 result.add(u);
             }
         });
         page.forEach(p->{
-            if(p.getAdmin().getEnabled()==true)
+            if(p.getAdmin().getEnabled())
             {
                 result.add(p);
             }
@@ -214,6 +220,86 @@ public class UserServiceIplm implements UserService {
         List<Image> images = imageRepository.getAllImageByUser(user);
         return images;
     }
+
+    @Override
+    public List<Post> getPostReported() {
+        return reportRepository.getAllReportByPost();
+
+    }
+
+    @Override
+    public List<Page> getPageReported() {
+        return reportRepository.getAllReportByPage();
+    }
+
+    @Override
+    public List<Comment> getCommentReported() {
+        return reportRepository.getAllReportByComment();
+    }
+
+    @Override
+    public boolean disabledPost(PostReq postReq) {
+        Post p = postRepository.getById(postReq.getId());
+       if(p!=null){
+           p.setEnabled(false);
+           return true;
+       }
+        else{
+            return false;
+       }
+    }
+
+    @Override
+    public boolean disabledPage(PageReq pageReq) {
+        Page pg = pageRepository.getById(pageReq.getId());
+        if(pg!=null){
+            pg.setEnabled(false);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    @Override
+    public boolean disabledComment(CommentReq commentReq) {
+        Comment pg = commentRepository.getById(commentReq.getId());
+        if(pg!=null){
+            pg.setEnabled(false);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    @Override
+    public boolean deletePost(PostReq postReq) {
+
+        Post p = postRepository.getById(postReq.getId());
+        if(p!=null){
+            postRepository.delete(p);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deletePage(PageReq pageReq) {
+
+        Page p = pageRepository.getById(pageReq.getId());
+        User admin = userRepository.findUserById(pageReq.getAdmin());
+        if(p!=null){
+            pageRepository.delete(p);
+            admin.setPage(null);
+            userRepository.save(admin);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     @Override
     public List<Image> getimgByUser(String userId) {
         User userfriend = userRepository.findUserById(userId);

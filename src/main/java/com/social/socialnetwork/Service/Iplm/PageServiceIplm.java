@@ -22,51 +22,52 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PageServiceIplm implements PageService {
-    private final UserRepository userRepository;
-    private final PageRepository pageRepository;
-    private final ImageRepository imageRepository;
 
-    @Override
-    public Page createPage(PageReq pageReq, MultipartFile images) {
-        String idCurrentUser = Utils.getIdCurrentUser();
-        User user = userRepository.findUserById(idCurrentUser);
-        if (user != null && pageRepository.findByPageByAdmin(user) == null) {
-            Page page = new Page();
-            page.setPageName(page.getPageName());
-            page.setAdmin(user);
-            page.setCreateTime(new Date());
-            page.setIntroduce(page.getIntroduce());
-            page.setCountMember((long) 0);
-            page.setVideos(null);
-            List<Image> pageImgs = new ArrayList<>();
-            if (images != null) {
-                Image avt = new Image();
-                avt.setImgLink(pageReq.getAvatar());
-                avt.setPostType(PostType.PUBLIC);
-                imageRepository.save(avt);
-                page.setAvatar(avt);
-                pageImgs.add(avt);
-                page.setImages(pageImgs);
-            } else {
-                page.setImages(null);
-            }
+  private final UserRepository userRepository;
+  private final PageRepository pageRepository;
+  private final ImageRepository imageRepository;
 
-            page.setEnabled(true);
-            pageRepository.save(page);
-            return page;
-        } else {
-            throw new AppException(404, "You are already admin 1 page");
-        }
+  @Override
+  public Page createPage(PageReq pageReq, MultipartFile images) {
+    String idCurrentUser = Utils.getIdCurrentUser();
+    User user = userRepository.findUserById(idCurrentUser);
+    if (user != null && pageRepository.findByPageByAdmin(user) == null) {
+      Page page = new Page();
+      page.setPageName(pageReq.getPageName());
+      page.setAdmin(user);
+      page.setCreateTime(new Date());
+      page.setIntroduce(pageReq.getIntroduce());
+      page.setCountMember((long) 0);
+      page.setVideos(null);
+      List<Image> pageImgs = new ArrayList<>();
+      if (images != null) {
+        Image avt = new Image();
+        avt.setImgLink(pageReq.getAvatar());
+        avt.setPostType(PostType.PUBLIC);
+        imageRepository.save(avt);
+        page.setAvatar(avt);
+        pageImgs.add(avt);
+        page.setImages(pageImgs);
+      } else {
+        page.setImages(null);
+      }
 
+      page.setEnabled(true);
+      pageRepository.save(page);
+      return page;
+    } else {
+      throw new AppException(404, "You are already admin 1 page");
     }
 
-    @Override
-    public boolean enabledPage(PageReq pageReq) {
-        if (pageReq.getEnabled()) {
-            pageReq.setEnabled(false);
-        } else {
-            pageReq.setEnabled(true);
-        }
-        return pageReq.getEnabled();
+  }
+
+  @Override
+  public boolean enabledPage(PageReq pageReq) {
+    if (pageRepository.existsById(pageReq.getId()) && pageReq.getEnabled()) {
+      pageReq.setEnabled(false);
+    } else {
+      pageReq.setEnabled(true);
     }
+    return pageReq.getEnabled();
+  }
 }

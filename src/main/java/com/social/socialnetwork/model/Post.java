@@ -32,5 +32,6 @@ public class Post {
     @Field("videos")
     private List<Video> videos;
     private Date createDate;
+    private boolean enabled;
 
 }

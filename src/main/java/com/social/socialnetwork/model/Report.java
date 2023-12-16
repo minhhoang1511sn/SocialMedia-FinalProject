@@ -19,4 +19,6 @@ public class Report {
     private Post post;
     @Embedded
     private Comment comment;
+    @Embedded
+    private Page page;
 }

@@ -18,4 +18,5 @@ public interface PostRepository extends MongoRepository<Post,String> {
     Post getById(String id);
     @Query(value = "{ 'userId' : ?0 }", sort = "{ 'createDate' : -1 }")
     List<Post> getAllPostByUser(String userId);
+
 }

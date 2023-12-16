@@ -15,4 +15,8 @@ public interface CommentService {
     List<Comment> getAllCommentByPost(String postid);
     Comment updateComment(CommentReq commentReq);
     boolean deleteComment(String id);
+
+
+    boolean disabledComment(CommentReq commentReq);
+
 }

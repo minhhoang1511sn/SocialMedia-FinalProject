@@ -31,10 +31,11 @@ public class PostController {
     @PostMapping(value = "/post", consumes = {
             "multipart/form-data"})
     public ResponseEntity<?> createPost(@ModelAttribute  PostReq postReq,@RequestParam(value = "image", required =
-            false) List<MultipartFile> image,@RequestParam(value = "video",required =false) List<MultipartFile> video)
+            false) List<MultipartFile> image,@RequestParam(value = "video",required =false) List<MultipartFile> video,@RequestParam(value = "tags", required =
+        false) List<String> idTags)
             throws IOException {
         try {
-            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.createPost(postReq,image,video)));
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.createPost(postReq,image,video,idTags)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }
@@ -79,5 +80,17 @@ public class PostController {
         if(posts!=null)
             return ResponseEntity.ok(new ResponseDTO(true,"Success",posts));
         else return ResponseEntity.ok(new ResponseDTO(false,"Invalid",null));
+    }
+
+    @GetMapping("/{postId}/link")
+    public ResponseEntity<String> getPostLink(@PathVariable String postId) {
+
+        Post post = postService.findPostById(postId);
+
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String postLink = "localhost:5000/api/v1/posts/" + post.getId();
+        return ResponseEntity.ok(postLink);
     }
 }

@@ -1,8 +1,14 @@
 package com.social.socialnetwork.Service;
 
+import com.social.socialnetwork.dto.CommentReq;
+import com.social.socialnetwork.dto.PageReq;
+import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.dto.UserReq;
+import com.social.socialnetwork.model.Comment;
 import com.social.socialnetwork.model.ConfirmationCode;
 import com.social.socialnetwork.model.Image;
+import com.social.socialnetwork.model.Page;
+import com.social.socialnetwork.model.Post;
 import com.social.socialnetwork.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,4 +33,15 @@ public interface UserService {
      User getCurrentUser();
      List<Image> getimgByUser(String userId);
      List<Image> getAllImageByUser(String userId);
+
+     List<Post> getPostReported();
+     List<Page> getPageReported();
+     List<Comment> getCommentReported();
+     boolean disabledPost(PostReq postReq);
+
+     boolean disabledPage(PageReq pageReq);
+     boolean disabledComment(CommentReq commentReq);
+     boolean deletePost(PostReq postReq);
+
+     boolean deletePage(PageReq pageReq);
 }

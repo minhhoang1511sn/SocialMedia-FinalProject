@@ -14,7 +14,7 @@ import java.util.List;
 
 
 public interface PostService {
-     Post  createPost(PostReq postReq,  List<MultipartFile> images,  List<MultipartFile> video);
+     Post  createPost(PostReq postReq,  List<MultipartFile> images,  List<MultipartFile> video,List<String> tagsId);
      Post findById(String id);
      boolean deletePost(String id);
      List<Post> getAllPost(String id);
@@ -23,5 +23,7 @@ public interface PostService {
      Video uploadVideo(String postId, MultipartFile videos) ;
      List<Post> gettingPostByFriend();
      List<Post> getAllPostByUser(String userId);
+
+     Post findPostById(String id);
 
 }

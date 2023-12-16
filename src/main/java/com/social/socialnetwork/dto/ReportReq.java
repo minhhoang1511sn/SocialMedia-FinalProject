@@ -7,5 +7,6 @@ public class ReportReq {
     private String contentReport;
     private String userId;
     private String postId;
+    private String pageId;
     private String commentId;
 }
