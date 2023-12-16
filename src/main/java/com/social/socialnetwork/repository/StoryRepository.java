@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StoryRepository extends MongoRepository<Story,String> {
+  Story getStoriesById(String id);
 }

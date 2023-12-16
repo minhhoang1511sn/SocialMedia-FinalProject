@@ -7,6 +7,7 @@ import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.PageRepository;
 import com.social.socialnetwork.repository.StoryRepository;
+import com.social.socialnetwork.repository.StoryStoredRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class StoryServiceIplm implements StoryService {
     private final UserService userService;
     private final StoryRepository storyRepository;
     private final PageRepository pageRepository;
+    private final StoryStoredRepository storyStoredRepository;
     @Override
     public Story createStory(StoryReq storyReq, MultipartFile images) {
         String idCurrentUser = Utils.getIdCurrentUser();
@@ -63,14 +65,19 @@ public class StoryServiceIplm implements StoryService {
     @Override
     public boolean disabledStory(StoryReq storyReq) {
         Date now = new Date();
-        if(TimeUnit.MILLISECONDS.toDays(now.getTime() - storyReq.getCreateTime().getTime())== 1)
+        Story sto = storyRepository.getStoriesById(storyReq.getId());
+        if(sto!=null && TimeUnit.MILLISECONDS.toDays(now.getTime() - sto.getCreateTime().getTime())>= 1)
         {
-            Story story = new Story();
-            story.setEnabled(true);
-            storyRepository.save(story);
-            return false;
+            sto.setEnabled(false);
+            storyRepository.save(sto);
+            StoryStored stoStored = new StoryStored();
+            stoStored.setStory(sto);
+            storyStoredRepository.save(stoStored);
+            return true;
         }
 
-        return true;
+        return false;
     }
+
+
 }
