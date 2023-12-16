@@ -18,6 +18,4 @@ public interface PageRepository extends MongoRepository<Page,String> {
     @Query("{'admin' : ?0}")
     Page findByPageByAdmin(User admin);
     Page getById(String pageId);
-    @Query("{'enabled' : false}")
-    List<Page> getAllPageByEnabled();
 }

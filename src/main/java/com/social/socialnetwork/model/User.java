@@ -41,7 +41,8 @@ public class User implements UserDetails {
     private List<Image> images;
     @DBRef
     private List<Post> posts;
-
+    @DBRef
+    private List<Page> pagefollowed;
     private List<String> userFriend;
     private List<String> userRequest;
     private List<String> userRespone;

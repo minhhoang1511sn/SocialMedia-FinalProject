@@ -4,6 +4,7 @@ import com.social.socialnetwork.Service.PageService;
 import com.social.socialnetwork.dto.PageReq;
 import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.dto.ResponseDTO;
+import com.social.socialnetwork.model.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,23 @@ public class PageController {
 
     }
     @PutMapping("/enabled-page")
-    public ResponseEntity<?> EnablePage(@ModelAttribute PageReq pageReq){
+    public ResponseEntity<?> EnablePage(@RequestBody PageReq pageReq){
         boolean check = pageService.enabledPage(pageReq);
         if(check)
-            return  ResponseEntity.ok().body(new ResponseDTO(true,"User has been enabled success",
+            return  ResponseEntity.ok().body(new ResponseDTO(true,"Page has been enabled success",
                     null));
         else
-            return  ResponseEntity.ok().body(new ResponseDTO(false,"User cannot enabled",
+            return  ResponseEntity.ok().body(new ResponseDTO(false,"Page cannot enabled",
                     null));
+    }
+    @PutMapping("/follow-page")
+    public ResponseEntity<?> followPage(@RequestBody PageReq pageReq){
+        Page p = pageService.followPage(pageReq);
+        if(p!=null)
+            return  ResponseEntity.ok().body(new ResponseDTO(true,"User has been follow success",
+                null));
+        else
+            return  ResponseEntity.ok().body(new ResponseDTO(false,"User cannot followed",
+                null));
     }
 }

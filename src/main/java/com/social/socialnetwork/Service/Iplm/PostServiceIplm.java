@@ -290,6 +290,7 @@ public class PostServiceIplm implements PostService {
   public List<Post> gettingPostByFriend() {
     List<User> users = userRepository.findAll();
     User curU = userService.getCurrentUser();
+
     List<Post> newfeeds = new ArrayList<>();
     users.forEach(u -> {
         if (friendService.isFriend(curU, u)) {

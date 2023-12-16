@@ -2,7 +2,6 @@ package com.social.socialnetwork.Service.Iplm;
 
 
 import com.social.socialnetwork.Service.PageService;
-import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.PageReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
@@ -69,5 +68,24 @@ public class PageServiceIplm implements PageService {
       pageReq.setEnabled(true);
     }
     return pageReq.getEnabled();
+  }
+
+  @Override
+  public Page followPage(PageReq pageReq) {
+    Page page = pageRepository.getById(pageReq.getId());
+    User user = userRepository.findUserById(Utils.getIdCurrentUser());
+    if(user.getPagefollowed()==null)
+    {
+      user.setPagefollowed(new ArrayList<>());
+    }
+    if(page!=null  && !user.getPagefollowed().contains(page))
+    {
+      List<Page> pageFollow = user.getPagefollowed();
+      pageFollow.add(page);
+      user.setPagefollowed(pageFollow);
+      userRepository.save(user);
+      return page;
+    }
+    return null;
   }
 }
