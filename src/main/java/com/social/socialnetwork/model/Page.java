@@ -17,8 +17,7 @@ import java.util.List;
 public class Page {
     private String id;
     private Long countMember;
-    @Embedded
-    private User admin;
+    private String admin;
     @Embedded
     private Image avatar;
     private String pageName;

@@ -126,7 +126,8 @@ public class UserServiceIplm implements UserService {
             }
         });
         page.forEach(p->{
-            if(p.getAdmin().getEnabled())
+            User admin = userRepository.findUserById(p.getAdmin());
+            if(admin.getEnabled())
             {
                 result.add(p);
             }
@@ -291,7 +292,7 @@ public class UserServiceIplm implements UserService {
         User admin = userRepository.findUserById(pageReq.getAdmin());
         if(p!=null){
             pageRepository.delete(p);
-            admin.setPage(null);
+//            admin.setPage(null);
             userRepository.save(admin);
             return true;
         }

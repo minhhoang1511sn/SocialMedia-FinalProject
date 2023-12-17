@@ -290,13 +290,22 @@ public class PostServiceIplm implements PostService {
   public List<Post> gettingPostByFriend() {
     List<User> users = userRepository.findAll();
     User curU = userService.getCurrentUser();
-
+    List<Page> pageFollow = curU.getPagefollowed();
     List<Post> newfeeds = new ArrayList<>();
-    users.forEach(u -> {
-        if (friendService.isFriend(curU, u)) {
-            newfeeds.addAll(u.getPosts());
+    for (User u: users) {
+      if (friendService.isFriend(curU, u) && u.getPosts() != null) {
+        newfeeds.addAll(u.getPosts());
+      }
+    }
+
+    if(pageFollow!=null){
+      for (Page p: pageFollow) {
+        if(p.getPosts()!=null)
+        {
+          newfeeds.addAll(p.getPosts());
         }
-    });
+      }
+    }
     newfeeds.addAll(curU.getPosts());
     newfeeds.sort(Comparator.comparing(Post::getCreateDate).reversed());
     return newfeeds;

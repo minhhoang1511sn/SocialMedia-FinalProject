@@ -33,7 +33,7 @@ public class PageServiceIplm implements PageService {
     if (user != null && pageRepository.findByPageByAdmin(user) == null) {
       Page page = new Page();
       page.setPageName(pageReq.getPageName());
-      page.setAdmin(user);
+      page.setAdmin(user.getId());
       page.setCreateTime(new Date());
       page.setIntroduce(pageReq.getIntroduce());
       page.setCountMember((long) 0);
