@@ -33,7 +33,7 @@ public class StoryController {
     }
 
     @PutMapping( "/story")
-    public ResponseEntity<?> disabledStory(@RequestBody StoryReq storyReq)
+    public ResponseEntity<?> disabledStory(@ModelAttribute StoryReq storyReq)
             throws IOException {
         try {
             return ResponseEntity.ok(new ResponseDTO(true, "Success",
