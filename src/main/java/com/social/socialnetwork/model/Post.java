@@ -34,5 +34,5 @@ public class Post {
     private Date createDate;
     private boolean enabled;
     private String feeling;
-
+    private String emoji;
 }
