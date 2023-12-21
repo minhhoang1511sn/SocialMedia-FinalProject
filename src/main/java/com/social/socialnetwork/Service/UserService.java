@@ -44,4 +44,12 @@ public interface UserService {
      boolean deletePost(PostReq postReq);
 
      boolean deletePage(PageReq pageReq);
+
+      void saveUser(User user);
+
+      void disconnect(User user);
+
+      List<User> findConnectedUsers();
+
+     String upBackGround(MultipartFile file)  throws IOException ;
 }

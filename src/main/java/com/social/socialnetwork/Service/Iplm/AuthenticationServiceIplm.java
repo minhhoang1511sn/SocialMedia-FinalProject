@@ -45,13 +45,13 @@ public class AuthenticationServiceIplm implements AuthenticationService {
   }
 
   @Override
-  public AuthenticationResponse validateOTP(PhoneVerifyReq phoneVerifyReq) {
+  public AuthenticationResponse validateOTP(verifycationDTO verifyDTO) {
     // Find user
-    User verifyingUser = userRepository.findById(phoneVerifyReq.getUserID()).get();
+    User verifyingUser = userRepository.findByPhone(verifyDTO.getPhone());
     // Get user's phone number from database
     String verifyingPhoneNumber = verifyingUser.getPhone();
     // Get Token requested
-    String code = phoneVerifyReq.getCode();
+    String code = verifyDTO.getCode();
 
     if (verifyPhoneNumber(verifyingPhoneNumber)) {
 
@@ -299,10 +299,10 @@ public class AuthenticationServiceIplm implements AuthenticationService {
   }
 
   @Override
-  public AuthenticationResponse validateVerificationCode(String code, String email) {
-    User userVeri = userRepository.findUserByEmail(email);
+  public AuthenticationResponse validateVerificationCode(verifycationDTO verifyDTO) {
+    User userVeri = userRepository.findUserByEmail(verifyDTO.getEmail());
     ConfirmationCode verificationCode
-        = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(code, email);
+        = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(verifyDTO.getCode(), verifyDTO.getEmail());
 
     if (verificationCode == null) {
       throw new AppException(400, "User not validated");

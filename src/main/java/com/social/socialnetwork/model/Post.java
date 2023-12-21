@@ -33,5 +33,6 @@ public class Post {
     private List<Video> videos;
     private Date createDate;
     private boolean enabled;
+    private String feeling;
 
 }

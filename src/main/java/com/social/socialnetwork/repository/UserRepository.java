@@ -15,7 +15,6 @@ public interface  UserRepository  extends MongoRepository<User, String> {
 
     User findUserByEmail(String email);
 
-    @Query("{'phone' : { $lt: ?0 }}")
     User findByPhone(String phone);
     @Query("{$and: [{ 'firstName': { $regex: ?0, $options: 'i' } }, { 'lastName': { $regex: ?0, $options: 'i' } }]}")
     List<User> findByFirstNameAndLastName(String query);
@@ -23,4 +22,7 @@ public interface  UserRepository  extends MongoRepository<User, String> {
     User findUserById(String id);
     Optional<User> findUserByPhone(String phone);
     boolean existsByPhone(String phone);
+
+    @Query("{'isActive' : { $lt: true }}")
+    List<User> findAllByStatus(boolean b);
 }

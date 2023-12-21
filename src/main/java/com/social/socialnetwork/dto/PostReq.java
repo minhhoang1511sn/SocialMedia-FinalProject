@@ -19,5 +19,6 @@ public class PostReq {
     private Date createDate;
     private String pageId;
     private boolean enabled;
+    private String feeling;
 
 }

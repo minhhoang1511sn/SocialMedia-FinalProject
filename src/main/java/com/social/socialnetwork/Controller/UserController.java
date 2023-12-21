@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +38,29 @@ public class UserController {
     public ResponseEntity<?> getCurrentUser(){
         User user = userService.getCurrentUser();
         return ResponseEntity.ok(new ResponseDTO(true,"Success",user));
+    }
+
+    @MessageMapping("/user.addUser")
+    @SendTo("/user/public")
+    public User addUser(
+        @Payload User user
+    ) {
+        userService.saveUser(user);
+        return user;
+    }
+
+    @MessageMapping("/user.disconnectUser")
+    @SendTo("/user/public")
+    public User disconnectUser(
+        @Payload User user
+    ) {
+        userService.disconnect(user);
+        return user;
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> findConnectedUsers() {
+        return ResponseEntity.ok(userService.findConnectedUsers());
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") String id){
@@ -125,6 +151,20 @@ public class UserController {
 
         return ResponseEntity.ok().body(new ResponseDTO(true,"Success",
                 url));
+    }
+
+    @PutMapping(value = "/user/background",consumes = {
+        "multipart/form-data"})
+    public ResponseEntity<?> upBackGround(@Parameter(
+        description = "Files to be uploaded",
+        content =  @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    )
+    @RequestParam(value = "image", required =
+        false) MultipartFile file) throws IOException {
+        String url = userService.upBackGround(file);
+
+        return ResponseEntity.ok().body(new ResponseDTO(true,"Success",
+            url));
     }
     @GetMapping("/images")
     public ResponseEntity<?> getImages(@RequestParam("userId") String userId){

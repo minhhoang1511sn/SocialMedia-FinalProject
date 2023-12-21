@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class PhoneVerifyReq {
-    private String userID;
+    private String phone;
     private String code;
 }

@@ -60,6 +60,7 @@ public class PostServiceIplm implements PostService {
       post.setPostType(PostType.PUBLIC);
       post.setUserPost(userPost);
       post.setEnabled(true);
+      post.setFeeling(postReq.getFeeling());
       Date now = new Date();
       post.setCreateDate(new Date(now.getTime()));
       if (postReq.getPageId() != null) {
@@ -170,6 +171,7 @@ public class PostServiceIplm implements PostService {
           PostType postType = postUpdate.getPostType();
           postUpdate.setContent(postReq.getContent());
           postUpdate.setUserPost(u);
+          postUpdate.setFeeling(postReq.getFeeling());
           postUpdate.setComments(commentList);
           if (postReq.getPageId() != null) {
               Page p = pageRepository.getById(postReq.getPageId());

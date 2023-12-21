@@ -1,5 +1,6 @@
 package com.social.socialnetwork.Service.Iplm;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
 import com.social.socialnetwork.Service.FriendService;
 import com.social.socialnetwork.Service.UserService;
@@ -109,7 +110,13 @@ public class UserServiceIplm implements UserService {
     @Override
     public User findUserByPhone(String phone) {
         if(phone!=null)
-        return userRepository.findByPhone(phone);
+        {
+            String phoneNo = phone.substring(1);
+            String originalNum = "+84" + phoneNo;
+
+            return userRepository.findByPhone(originalNum);
+        }
+
         else return null;
     }
 
@@ -324,4 +331,44 @@ public class UserServiceIplm implements UserService {
             });
         return imgByFriend;
     }
+
+    public void saveUser(User user) {
+        user.setIsActive(true);
+        userRepository.save(user);
+    }
+
+    public void disconnect(User user) {
+        var storedUser = userRepository.findById(user.getLastName()).orElse(null);
+        if (storedUser != null) {
+            user.setIsActive(false);
+            userRepository.save(storedUser);
+        }
+    }
+
+    public List<User> findConnectedUsers() {
+        return userRepository.findAllByStatus(true);
+    }
+
+    @Override
+    public String upBackGround(MultipartFile file) throws IOException {
+        String id = Utils.getIdCurrentUser();
+        User user = findById(id);
+        if (user == null)
+            throw new AppException(404, "User ID not found");
+        Image imgUrl = new Image();
+        if (user.getBackground() != null && user.getBackground().getImgLink().startsWith("https://res.cloudinary.com/minhhoang1511/image/upload")) {
+            imgUrl = user.getBackground();
+            imgUrl.setImgLink(cloudinaryUpload.uploadImage(file,imgUrl.getImgLink()));
+        }else
+            imgUrl.setImgLink(cloudinaryUpload.uploadImage(file,null));
+        imgUrl.setPostType(PostType.PUBLIC);
+        imageRepository.save(imgUrl);
+        user.setBackground(imgUrl);
+        List<Image> imageUser = imageRepository.getAllImageByUser(user);
+        imageUser.add(imgUrl);
+        user.setImages(imageUser);
+        userRepository.save(user);
+        return imgUrl.getImgLink();
+    }
+
 }

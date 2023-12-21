@@ -44,7 +44,7 @@ public class PostController {
     @GetMapping(path="/")
     public String getURLPost(HttpServletRequest httpServletRequest) {
         String link = String.valueOf(httpServletRequest.getRequestURL());
-        return "index";
+        return link;
     }
     @PutMapping(value = "/update-post", consumes = {
             "multipart/form-data"})

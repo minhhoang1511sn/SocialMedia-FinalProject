@@ -8,7 +8,7 @@ import com.social.socialnetwork.model.User;
 public interface AuthenticationService {
      ConfirmationCode GetNewOTP(String uid);
 
-     AuthenticationResponse validateOTP(PhoneVerifyReq phoneVerifyReq);
+     AuthenticationResponse validateOTP(verifycationDTO verifyDTO);
 
      String formatPhoneNumber(String phone);
 
@@ -16,7 +16,7 @@ public interface AuthenticationService {
      AuthenticationResponse authenticate(AuthenticationReqest reqest);
      User validateVerificationCodetoResetPassword(PasswordDTO passwordDTO);
      void saveVerificationCodeForUser(User users, String token);
-     AuthenticationResponse validateVerificationCode(String code, String email);
+     AuthenticationResponse validateVerificationCode(verifycationDTO verifyDTO);
 
      User saveRegister(UserReq userReq, String prefix);
 

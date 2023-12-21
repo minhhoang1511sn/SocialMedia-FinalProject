@@ -32,6 +32,8 @@ public class User implements UserDetails {
     @Embedded
     private Image image;
     @Embedded
+    private Image background;
+    @Embedded
     private Page page;
     private Date  birthday;
     private String gender;
