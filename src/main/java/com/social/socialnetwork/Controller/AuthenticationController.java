@@ -65,8 +65,8 @@ public class AuthenticationController {
 
     @Operation(summary = "Verify authentication by phone SMS OTP")
     @RequestMapping(value = "/verifyRegistration-phone", method = RequestMethod.GET)
-    public ResponseEntity<?> verifyRegistrationWithPhone(@RequestBody PhoneVerifyReq phoneVerifyReq) {
-        AuthenticationResponse result = authenticationService.validateOTP(phoneVerifyReq);
+    public ResponseEntity<?> verifyRegistrationWithPhone(@RequestBody verifycationDTO verifyDTO) {
+        AuthenticationResponse result = authenticationService.validateOTP(verifyDTO);
         if(result== null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -109,6 +109,7 @@ public class AuthenticationController {
             u.setLastName(request.getLastName());
             u.setFirstName(request.getFirstName());
             u.setPassword(request.getPassword());
+            u.setEnabled(false);
             return ResponseEntity.ok(new ResponseDTO(true,"Sending OTP",
                     authenticationService.registerByPhone(u, "+84")));
         }
@@ -118,11 +119,11 @@ public class AuthenticationController {
         }
     }
     @RequestMapping(value = "/verifyRegistration", method = RequestMethod.POST)
-    public ResponseEntity<?> verifyRegistration(@RequestParam String code,
-                                                @RequestParam String email) {
+    public ResponseEntity<?> verifyRegistration(@RequestBody  verifycationDTO verifyDTO) {
 
-        AuthenticationResponse result = authenticationService.validateVerificationCode(code,email);
-        if(result==null) {
+        AuthenticationResponse result = authenticationService.validateVerificationCode(verifyDTO);
+        if(result==null)
+        {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(result);
