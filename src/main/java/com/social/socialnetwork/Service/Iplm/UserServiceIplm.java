@@ -310,12 +310,12 @@ public class UserServiceIplm implements UserService {
 
     @Override
     public List<Image> getimgByUser(String userId) {
-        User userfriend = userRepository.findUserById(userId);
+        User userFriend = userRepository.findUserById(userId);
         User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
         List<Image> images = getAllImageByUser(userId);
         List<Image> imgByFriend = new ArrayList<>();
             images.forEach(p ->{
-                if(friendRepository.existsByFirstUserAndSecondUser(curUser,userfriend))
+                if(friendRepository.existsByFirstUserAndSecondUser(curUser,userFriend))
                 {
                     if(p.getPostType() == PostType.PUBLIC || p.getPostType() == PostType.FRIEND)
                     {
