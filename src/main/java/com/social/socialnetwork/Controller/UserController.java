@@ -182,4 +182,10 @@ public class UserController {
         List<User> suggestFriend = friendService.getUserRequestFriends(Utils.getIdCurrentUser());
         return ResponseEntity.ok().body(new ResponseDTO(true,"Success",suggestFriend));
     }
+
+    @GetMapping("/active-friend")
+    public ResponseEntity<?> getActiveFriend(){
+        List<User> activeFriend = userService.findActiveFriend();
+        return ResponseEntity.ok().body(new ResponseDTO(true,"Success",activeFriend));
+    }
 }

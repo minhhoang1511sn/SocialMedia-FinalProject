@@ -371,4 +371,21 @@ public class UserServiceIplm implements UserService {
         return imgUrl.getImgLink();
     }
 
+    @Override
+    public List<User> findActiveFriend() {
+        User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
+        List<String> friends = curUser.getUserFriend();
+        List<User> activeFriend = new ArrayList<>();
+
+        for (String userId: friends) {
+            User friend = userRepository.findUserById(userId);
+            if(friend.getIsActive())
+            {
+                activeFriend.add(friend);
+            }
+        }
+
+        return activeFriend;
+    }
+
 }

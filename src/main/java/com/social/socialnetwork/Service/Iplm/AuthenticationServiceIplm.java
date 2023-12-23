@@ -282,6 +282,8 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         throw new AppException(400, "User not authenticate");
       } else {
         var jwtToken = jwtService.generateToken(user);
+        user.setIsActive(true);
+        userRepository.save(user);
         return AuthenticationResponse.builder()
             .token(jwtToken).build();
       }

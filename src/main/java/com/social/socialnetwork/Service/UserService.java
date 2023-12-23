@@ -52,4 +52,6 @@ public interface UserService {
       List<User> findConnectedUsers();
 
      String upBackGround(MultipartFile file)  throws IOException ;
+
+     List<User> findActiveFriend();
 }

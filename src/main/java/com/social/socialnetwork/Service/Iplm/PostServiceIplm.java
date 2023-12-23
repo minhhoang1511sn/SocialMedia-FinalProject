@@ -231,7 +231,6 @@ public class PostServiceIplm implements PostService {
 
           postRepository.save(post);
           userRepository.save(user);
-          //String url =image.getImgLink();
           return image;
       } else {
           return null;
