@@ -56,6 +56,24 @@ public class PostController {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }
     }
+
+    @PutMapping(value = "/like-post")
+    public ResponseEntity<?> likePost(@RequestParam  String postId){
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.likePost(postId)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+    }
+
+    @PutMapping(value = "/unlike-post")
+    public ResponseEntity<?> unLikePost(@RequestParam  String postId){
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.unlikePost(postId)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+    }
     @DeleteMapping("/delete-post/{id}")
     public ResponseEntity<?> deletePost( @PathVariable String id)
     {

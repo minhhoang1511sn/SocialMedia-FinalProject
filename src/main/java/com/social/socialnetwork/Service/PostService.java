@@ -26,4 +26,8 @@ public interface PostService {
 
      Post findPostById(String id);
 
+     Post likePost(String id);
+
+     Post unlikePost(String id);
+
 }

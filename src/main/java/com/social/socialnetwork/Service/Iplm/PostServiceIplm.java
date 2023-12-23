@@ -39,6 +39,8 @@ public class PostServiceIplm implements PostService {
   private final UserService userService;
   private final FriendService friendService;
   private final PageRepository pageRepository;
+  private final PostLikeRepository postLikeRepository;
+  private final ModelMapper modelMapper;
 
   @Override
   public Post createPost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
@@ -321,6 +323,35 @@ public class PostServiceIplm implements PostService {
   @Override
   public Post findPostById(String id) {
     return postRepository.getById(id);
+  }
+
+  @Override
+  public Post likePost(String id) {
+    Post post = postRepository.getById(id);
+    PostLike postLike = new PostLike();
+    if(post != null){
+      postLike.setPostId(id);
+      postLike.setUserId(Utils.getIdCurrentUser());
+      postLikeRepository.save(postLike);
+      Long numberLike = post.getCountLike();
+      post.setCountLike(numberLike+1);
+      postRepository.save(post);
+    }
+    return post;
+  }
+
+  @Override
+  public Post unlikePost(String id) {
+    Post post = postRepository.getById(id);
+
+    if(post != null && postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),id)!=null){
+      PostLike postLike = postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),id);
+      postLikeRepository.delete(postLike);
+      Long numberLike = post.getCountLike();
+      post.setCountLike(numberLike-1);
+      postRepository.save(post);
+    }
+    return post;
   }
 
 
