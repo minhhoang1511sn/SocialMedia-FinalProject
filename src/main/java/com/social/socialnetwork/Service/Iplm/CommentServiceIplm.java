@@ -97,6 +97,7 @@ public class CommentServiceIplm implements CommentService {
           Page p = pageRepository.getById(commentReq.getPageId());
           commentUpdate.setPage(p);
         }
+        commentRepository.save(commentUpdate);
         return commentUpdate;
       } else {
         throw new AppException(404, "Comment ID not found");
