@@ -17,19 +17,9 @@ public class Message {
     @Id
     private String id;
     @Embedded
-    @Transient
     private User sender;
     @Embedded
-    @Transient
     private User receiver;
-    @Embedded
-    private UserMessage uSender;
-    @Embedded
-    private UserMessage uReceiver;
-    @Embedded
-    private Video video;
-    @Embedded
-    private Image image;
     private String message;
-    private LocalDateTime createTime;
+    private Date createTime;
 }

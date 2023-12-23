@@ -22,4 +22,7 @@ public interface MessageRepository  extends MongoRepository<Message,String> {
             "{$match: {id: {$in: ['$maxId']}}}" +
             "]")
     List<Message> findAllRecentMessages(String id);
+
+    List<Message> findBySenderIdAndReceiverIdOrSenderIdAndReceiverIdOrderByCreateTimeAsc(
+        String senderId, String receiverId, String receiverId2, String senderId2);
 }

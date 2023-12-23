@@ -1,0 +1,18 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongo_db
+    ports:
+      - 27017:27017
+    volumes:
+      -mongo:/data
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+volumes:
+  mongo: {}
