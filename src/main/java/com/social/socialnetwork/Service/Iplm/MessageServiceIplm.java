@@ -30,8 +30,8 @@ public class MessageServiceIplm implements MessageService {
         Map<UserMessage, MessageDTO> map = new HashMap<>();
         all.forEach(m -> {
             MessageDTO messageDTO = modelMapper.map(m,MessageDTO.class);
-            UserMessage user = m.getUSender().getUserId().equals(id) ? m.getUReceiver() : m.getUSender();
-            map.put(user, messageDTO);
+//            UserMessage user = m.getUSender().getUserId().equals(id) ? m.getUReceiver() : m.getUSender();
+//            map.put(user, messageDTO);
         });
         return map.values();
     }
@@ -61,8 +61,8 @@ public class MessageServiceIplm implements MessageService {
         Message message = new Message();
 
         message.setMessage(messageDTO.getMessage());
-        message.setUReceiver(uRReceiver);
-        message.setUSender(uSender);
+//        message.setUReceiver(uRReceiver);
+//        message.setUSender(uSender);
         if(sender.getImage()!=null)
             uSender.setAvatar(sender.getImage().getImgLink());
         if(receiver.getImage()!=null)
@@ -73,7 +73,7 @@ public class MessageServiceIplm implements MessageService {
         uRReceiver.setLastName(receiver.getLastName());
         uSender.setUserId(sender.getId());
         uRReceiver.setUserId(receiver.getId());
-        message.setCreateTime(LocalDateTime.now());
+//        message.setCreateTime(LocalDateTime.now());
         userMessageRepository.save(uRReceiver);
         userMessageRepository.save(uSender);
         messageRepository.save(message);
