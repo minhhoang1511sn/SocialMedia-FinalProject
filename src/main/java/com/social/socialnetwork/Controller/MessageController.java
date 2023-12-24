@@ -1,6 +1,7 @@
 package com.social.socialnetwork.Controller;
 
 import com.social.socialnetwork.Service.MessageService;
+import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.MessageDTO;
 import com.social.socialnetwork.dto.ResponseDTO;
 import com.social.socialnetwork.model.Message;
@@ -27,6 +28,7 @@ import java.util.Date;
 @CrossOrigin(origins ="http://localhost:3000")
 public class MessageController {
     private final MessageService messageService;
+    private final UserService userService;
     @PostMapping("/send-message")
     public ResponseEntity<?> sendMessage(@RequestBody MessageDTO messageDTO){
         try {
@@ -47,6 +49,15 @@ public class MessageController {
     public ResponseEntity<?> getAllRecentMessage(@RequestParam String userId){
         try {
             return ResponseEntity.ok(new ResponseDTO(true, "Success", messageService.findAllRecentMessages(userId)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/find-all-messages")
+    public ResponseEntity<?> getAllMessages(){
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", userService.findAllUserMessages()));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }

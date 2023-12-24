@@ -10,6 +10,7 @@ import com.social.socialnetwork.model.Image;
 import com.social.socialnetwork.model.Page;
 import com.social.socialnetwork.model.Post;
 import com.social.socialnetwork.model.User;
+import com.social.socialnetwork.model.UserMessage;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -50,6 +51,8 @@ public interface UserService {
       void disconnect(User user);
 
       List<User> findConnectedUsers();
+     List<UserMessage> findAllUserMessages();
+
 
      String upBackGround(MultipartFile file)  throws IOException ;
 

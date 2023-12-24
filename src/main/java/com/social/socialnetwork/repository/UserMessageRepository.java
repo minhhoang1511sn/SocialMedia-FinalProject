@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface UserMessageRepository extends MongoRepository<UserMessage,String> {
-    @Query("{'id' : ?0}")
+
     List<UserMessage> findAllByUserId(String id);
 }

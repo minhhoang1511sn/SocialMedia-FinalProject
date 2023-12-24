@@ -67,8 +67,8 @@ public class MessageServiceIplm implements MessageService {
             uSender.setAvatar(sender.getImage().getImgLink());
         if(receiver.getImage()!=null)
             uRReceiver.setAvatar(receiver.getImage().getImgLink());
-        uSender.setFirstName(sender.getFirstName());
-        uRReceiver.setFirstName(receiver.getFirstName());
+//        uSender.setFirstName(sender.getFirstName());
+//        uRReceiver.setFirstName(receiver.getFirstName());
         uSender.setLastName(sender.getLastName());
         uRReceiver.setLastName(receiver.getLastName());
         uSender.setUserId(sender.getId());

@@ -12,6 +12,7 @@ import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
+import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class UserServiceIplm implements UserService {
             List<UserMessage> userMessages = userMessageRepository.findAllByUserId(userUpdate.getId());
             userMessages.forEach(u->{
                         u.setLastName(userUpdate.getLastName());
-                        u.setFirstName(userUpdate.getFirstName());
+//                        u.setFirstName(userUpdate.getFirstName());
                         u.setId(userUpdate.getId());
                     }
             );
@@ -346,6 +347,27 @@ public class UserServiceIplm implements UserService {
 
     public List<User> findConnectedUsers() {
         return userRepository.findAllByStatus(true);
+    }
+
+    @Override
+    public List<UserMessage> findAllUserMessages() {
+        User cur = userRepository.findUserById(Utils.getIdCurrentUser());
+        List<String> friend = cur.getUserFriend();
+        List<UserMessage> result = new ArrayList<>();
+        for (String uId: friend)
+        {
+            User fr = userRepository.findUserById(uId);
+            UserMessage um = new UserMessage();
+            um.setMessage(null);
+            um.setUserId(uId);
+            um.setAvatar(fr.getImage().toString());
+            um.setLastName(fr.getLastName());
+            um.setCreateTime(new Date());
+            result.add(um);
+            userMessageRepository.save(um);
+        }
+
+        return result;
     }
 
     @Override

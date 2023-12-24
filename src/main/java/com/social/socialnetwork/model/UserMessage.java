@@ -2,6 +2,7 @@ package com.social.socialnetwork.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,11 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserMessage {
     @Id
     private String id;
-    private String firstName;
     private String lastName;
     private String userId;
     private String avatar;
-    @Embedded
-    @Transient
-    private Message message;
+    private String message;
+    private Date createTime;
 }
