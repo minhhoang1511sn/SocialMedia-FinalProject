@@ -1,6 +1,7 @@
 package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.AuthenticationService;
+import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.Service.twilio.TwillioService;
 import com.social.socialnetwork.config.JwtService;
 import com.social.socialnetwork.dto.*;
@@ -26,7 +27,7 @@ import java.util.Calendar;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceIplm implements AuthenticationService {
-
+  private final UserService userService;
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
@@ -266,7 +267,7 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         );
         user = userRepository.findByEmail(reqest.getEmail())
             .orElseThrow();
-      } else if (reqest.getPhone() != null) {
+      } else  {
         String loginPhoneNumber = formatPhoneNumber(reqest.getPhone());
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -302,9 +303,19 @@ public class AuthenticationServiceIplm implements AuthenticationService {
 
   @Override
   public AuthenticationResponse validateVerificationCode(verifycationDTO verifyDTO) {
-    User userVeri = userRepository.findUserByEmail(verifyDTO.getEmail());
-    ConfirmationCode verificationCode
-        = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(verifyDTO.getCode(), verifyDTO.getEmail());
+    User userVeri = null;
+    ConfirmationCode verificationCode = null;
+    if(verifyDTO.getEmail()!=null)
+    {
+      userVeri = userRepository.findUserByEmail(verifyDTO.getEmail());
+      verificationCode
+          = confirmationCodeRepository.findVerificationCodeByCodeAndUserEmail(verifyDTO.getCode(), verifyDTO.getEmail());
+    }
+    else{
+      userVeri = userService.findUserByPhone(verifyDTO.getPhone());
+      verificationCode
+          = confirmationCodeRepository.findConfirmationCodeByCodeAndUserPhone(verifyDTO.getCode(), userVeri.getPhone());
+    }
 
     if (verificationCode == null) {
       throw new AppException(400, "User not validated");

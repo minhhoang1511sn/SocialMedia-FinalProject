@@ -113,7 +113,6 @@ public class UserServiceIplm implements UserService {
         {
             String phoneNo = phone.substring(1);
             String originalNum = "+84" + phoneNo;
-
             return userRepository.findByPhone(originalNum);
         }
 
