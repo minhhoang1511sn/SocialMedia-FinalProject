@@ -144,7 +144,7 @@ function sendMessage(event) {
             content: messageInput.value.trim(),
             timestamp: new Date()
         };
-        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+        stompClient.send("/api/v1/chat", {}, JSON.stringify(chatMessage));
         displayMessage(nickname, messageInput.value.trim());
         messageInput.value = '';
     }
