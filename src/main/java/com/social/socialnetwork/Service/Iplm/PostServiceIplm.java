@@ -350,13 +350,18 @@ public class PostServiceIplm implements PostService {
   public Post likePost(String id) {
     Post post = postRepository.getById(id);
     PostLike postLike = new PostLike();
-    if(post != null){
+    if(post != null && postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),id)==null){
       postLike.setPostId(id);
       postLike.setUserId(Utils.getIdCurrentUser());
       postLikeRepository.save(postLike);
       Long numberLike = post.getCountLike();
       post.setCountLike(numberLike+1);
       postRepository.save(post);
+      User u = userRepository.findUserById(Utils.getIdCurrentUser());
+      List<String> ulike = u.getPostLike() == null ? new ArrayList<>() : u.getPostLike();
+      ulike.add(postLike.getPostId());
+      u.setPostLike(ulike);
+      userRepository.save(u);
     }
     return post;
   }
@@ -367,6 +372,11 @@ public class PostServiceIplm implements PostService {
 
     if(post != null && postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),id)!=null){
       PostLike postLike = postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),id);
+      User u = userRepository.findUserById(Utils.getIdCurrentUser());
+      List<String> ulike = u.getPostLike() == null ? new ArrayList<>() : u.getPostLike();
+      ulike.remove(postLike.getPostId());
+      u.setPostLike(ulike);
+      userRepository.save(u);
       postLikeRepository.delete(postLike);
       Long numberLike = post.getCountLike();
       post.setCountLike(numberLike-1);
