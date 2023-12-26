@@ -11,4 +11,6 @@ public interface NotificationService {
     List<Notification> getAllNotificationsByUser(String userId);
     Notification changeStatusNoti(NotificationDTO notificationDTO);
     Notification newNotificaition(NotificationDTO notificationDTO);
+
+  void sendNotificationToUserById(String userId, String message);
 }

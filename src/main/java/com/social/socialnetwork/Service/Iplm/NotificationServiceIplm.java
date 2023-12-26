@@ -2,7 +2,6 @@ package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.NotificationService;
 import com.social.socialnetwork.dto.NotificationDTO;
-import com.social.socialnetwork.dto.UserReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.NotificationRepository;
@@ -10,6 +9,7 @@ import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ public class NotificationServiceIplm implements NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final ModelMapper modelMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     @Override
     public List<Notification> getAllNotificationsByUser(String userId) {
         User user = userRepository.findUserById(userId);
@@ -51,5 +52,10 @@ public class NotificationServiceIplm implements NotificationService {
         notification.setUser(user);
         notification.setCreateTime(new Date());
         return notificationRepository.save(notification);
+    }
+    @Override
+    public void sendNotificationToUserById(String userId, String message) {
+        // Sends a notification to a specific user identified by their ID
+        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", message);
     }
 }
