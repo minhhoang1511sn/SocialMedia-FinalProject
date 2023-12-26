@@ -9,6 +9,7 @@ import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class CommentServiceIplm implements CommentService {
       comment.setEnabled(true);
       User user = userService.findById(userId);
       Post post = postRepository.findById(commentReq.getPostId()).orElse(null);
-      comment.setPost(post);
+      comment.setPost(post.getId());
       comment.setCreateTime(new Date());
       if (commentReq.getPageId() != null) {
         Page p = pageRepository.getById(commentReq.getPageId());
@@ -67,6 +68,13 @@ public class CommentServiceIplm implements CommentService {
       userCommentRepository.save(userComment);
       comment.setUserComment(userComment);
       commentRepository.save(comment);
+      List<Comment> comments = new ArrayList<>();
+      if (post != null && post.getComments() != null) {
+        comments = post.getComments();
+      }
+      comments.add(comment);
+      post.setComments(comments);
+      postRepository.save(post);
       return comment;
     } else {
       throw new AppException(404, "Post or Comment not exits.");

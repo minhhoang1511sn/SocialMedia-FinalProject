@@ -48,6 +48,7 @@ public class User implements UserDetails {
     private List<String> userFriend;
     private List<String> userRequest;
     private List<String> userRespone;
+    private List<String> postLike;
     @Enumerated(EnumType.STRING)
     private Role role;
     private Boolean Enabled;

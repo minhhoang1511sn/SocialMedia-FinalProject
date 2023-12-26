@@ -21,9 +21,7 @@ public class Comment {
     @Embedded
     private Page page;
     private String content;
-    @DBRef
-    @Transient
-    private Post post;
+    private String post;
     private Double rate;
     private Date createTime;
     @DBRef

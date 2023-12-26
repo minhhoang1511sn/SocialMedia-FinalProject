@@ -48,10 +48,11 @@ public class PostController {
     }
     @PutMapping(value = "/update-post", consumes = {
             "multipart/form-data"})
-    public ResponseEntity<?> updatePost(@ModelAttribute PostReq postReq,@RequestParam(value = "image", required =
-            false) MultipartFile image){
+    public ResponseEntity<?> updatePost(@ModelAttribute  PostReq postReq,@RequestParam(value = "image", required =
+        false) List<MultipartFile> image,@RequestParam(value = "video",required =false) List<MultipartFile> video,@RequestParam(value = "tags", required =
+        false) List<String> idTags){
         try {
-            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.updatePost(postReq,image)));
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.updatePost(postReq,image,video,idTags)));
         } catch (Exception e) {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }

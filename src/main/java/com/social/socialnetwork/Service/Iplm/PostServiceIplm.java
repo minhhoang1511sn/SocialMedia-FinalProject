@@ -160,33 +160,45 @@ public class PostServiceIplm implements PostService {
   }
 
   @Override
-  public Post updatePost(PostReq postReq, MultipartFile images) {
+  public Post updatePost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
     Post postUpdate = postRepository.findById(postReq.getId()).orElse(null);
     String idCurrentUser = Utils.getIdCurrentUser();
-      if (postUpdate != null) {
-          if (images != null) {
-              uploadImage(postUpdate.getId(), images);
-          }
-          List<Comment> commentList = postUpdate.getComments();
-          List<UserPost> uc = userPostRepository.findAllByUserId(idCurrentUser);
-          UserPost u = uc.get(0);
-          PostType postType = postUpdate.getPostType();
-          postUpdate.setContent(postReq.getContent());
-          postUpdate.setUserPost(u);
-          postUpdate.setFeeling(postReq.getFeeling());
-          postUpdate.setComments(commentList);
-          if (postReq.getPageId() != null) {
-              Page p = pageRepository.getById(postReq.getPageId());
-              postUpdate.setPage(p);
-          }
-          Date now = new Date();
-          postUpdate.setCreateDate(new Date(
-              now.getTime() - (postReq.getCreateDate() != null ? postReq.getCreateDate().getTime()
-                  : 0)));
-          postUpdate.setPostType(postType);
-          return postRepository.save(postUpdate);
+    if (postUpdate != null && postUpdate.getUserPost().getUserId().equals(idCurrentUser)) {
+      List<Image> listImg = new ArrayList<>();
+      if (images != null) {
+        for (MultipartFile image : images) {
+          Image img = uploadImage(postUpdate.getId(), image);
+          listImg.add(img);
+        }
+        postUpdate.setImages(listImg);
+      }
+      List<Video> videoList = new ArrayList<>();
+      if (video != null) {
+        for (MultipartFile v : video) {
+          Video vd = uploadVideo(postUpdate.getId(), v);
+          videoList.add(vd);
+        }
+      }
+        List<Comment> commentList = postUpdate.getComments();
+        List<UserPost> uc = userPostRepository.findAllByUserId(idCurrentUser);
+        UserPost u = uc.get(0);
+        PostType postType = postUpdate.getPostType();
+        postUpdate.setContent(postReq.getContent());
+        postUpdate.setUserPost(u);
+        postUpdate.setFeeling(postReq.getFeeling());
+        postUpdate.setComments(commentList);
+        if (postReq.getPageId() != null) {
+          Page p = pageRepository.getById(postReq.getPageId());
+          postUpdate.setPage(p);
+        }
+        Date now = new Date();
+        postUpdate.setCreateDate(new Date(
+            now.getTime() - (postReq.getCreateDate() != null ? postReq.getCreateDate().getTime()
+                : 0)));
+        postUpdate.setPostType(postType);
+        return postRepository.save(postUpdate);
       } else {
-          throw new AppException(400, "Post does not exists");
+        throw new AppException(400, "Post does not exists");
       }
   }
 
@@ -311,6 +323,15 @@ public class PostServiceIplm implements PostService {
     }
     newfeeds.addAll(curU.getPosts());
     newfeeds.sort(Comparator.comparing(Post::getCreateDate).reversed());
+    List<String> postLike = new ArrayList<>();
+    for (Post p: newfeeds) {
+      if(postLikeRepository.findByUserIdAndPostId(Utils.getIdCurrentUser(),p.getId())!=null)
+      {
+        postLike.add(p.getId());
+      }
+    }
+    curU.setPostLike(postLike);
+    userRepository.save(curU);
     return newfeeds;
   }
 
