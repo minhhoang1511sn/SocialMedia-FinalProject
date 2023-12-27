@@ -108,6 +108,7 @@ public class CommentServiceIplm implements CommentService {
         commentRepository.save(commentUpdate);
         Post p = postRepository.getById(commentReq.getPostId());
         List<Comment> commentList = new ArrayList<>();
+        if(p.getComments()!=null)
           commentList = p.getComments();
         for (Comment c: commentList) {
           if(c.getId().equals(commentUpdate.getId()))

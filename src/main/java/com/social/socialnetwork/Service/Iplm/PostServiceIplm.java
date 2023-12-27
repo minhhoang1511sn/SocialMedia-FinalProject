@@ -71,13 +71,7 @@ public class PostServiceIplm implements PostService {
       }
       postRepository.save(post);
 
-      List<Post> userPosts = user.getPosts();
-      if (userPosts == null) {
-        userPosts = new ArrayList<>();
-      }
-      userPosts.add(post);
-      user.setPosts(userPosts);
-      userRepository.save(user);
+
       List<Image> listImg = new ArrayList<>();
       if (images != null) {
         for (MultipartFile image : images) {
@@ -109,6 +103,13 @@ public class PostServiceIplm implements PostService {
         post.setUsertags(null);
       }
       postRepository.save(post);
+      List<Post> userPosts = user.getPosts();
+      if (userPosts == null) {
+        userPosts = new ArrayList<>();
+      }
+      userPosts.add(post);
+      user.setPosts(userPosts);
+      userRepository.save(user);
       return post;
     } else {
       throw new AppException(404, "Product or Comment not exits.");
@@ -322,7 +323,8 @@ public class PostServiceIplm implements PostService {
         }
       }
     }
-    newfeeds.addAll(curU.getPosts());
+    if(curU.getPosts()!=null)
+      newfeeds.addAll(curU.getPosts());
     newfeeds.sort(Comparator.comparing(Post::getCreateDate).reversed());
     List<String> postLike = new ArrayList<>();
     for (Post p: newfeeds) {
