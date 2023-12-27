@@ -106,6 +106,19 @@ public class CommentServiceIplm implements CommentService {
           commentUpdate.setPage(p);
         }
         commentRepository.save(commentUpdate);
+        Post p = postRepository.getById(commentReq.getPostId());
+        List<Comment> commentList = new ArrayList<>();
+          commentList = p.getComments();
+        for (Comment c: commentList) {
+          if(c.getId().equals(commentUpdate.getId()))
+          {
+            commentList.remove(c);
+            commentList.add(commentUpdate);
+            break;
+          }
+        }
+        p.setComments(commentList);
+        postRepository.save(p);
         return commentUpdate;
       } else {
         throw new AppException(404, "Comment ID not found");
@@ -119,8 +132,23 @@ public class CommentServiceIplm implements CommentService {
   @Override
   public boolean deleteComment(String id) {
     Comment comment = commentRepository.findById(id).orElse(null);
+
     if (comment != null) {
-      commentRepository.deleteById(id);
+      Post p = postRepository.getById(comment.getPost());
+      List<Comment> commentList = new ArrayList<>();
+      if(p!=null){
+        commentList = p.getComments();
+        for (Comment c: commentList) {
+          if(c.getId().equals(comment.getId()))
+          {
+            commentList.remove(c);
+            break;
+          }
+        }
+        p.setComments(commentList);
+        postRepository.save(p);
+      }
+      commentRepository.delete(comment);
       return true;
     } else {
       throw new AppException(404, "Comment ID not found");
