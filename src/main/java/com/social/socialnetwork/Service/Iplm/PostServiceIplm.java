@@ -179,6 +179,7 @@ public class PostServiceIplm implements PostService {
           videoList.add(vd);
         }
       }
+      postUpdate.setVideos(videoList);
         List<Comment> commentList = postUpdate.getComments();
         List<UserPost> uc = userPostRepository.findAllByUserId(idCurrentUser);
         UserPost u = uc.get(0);

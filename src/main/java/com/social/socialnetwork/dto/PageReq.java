@@ -13,6 +13,5 @@ public class PageReq {
     private String pageName;
     private String introduce;
     private Date createTime;
-    private String avatar;
     private Boolean enabled;
 }

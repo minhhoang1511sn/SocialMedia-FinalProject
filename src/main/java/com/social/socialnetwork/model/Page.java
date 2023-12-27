@@ -20,6 +20,8 @@ public class Page {
     private String admin;
     @Embedded
     private Image avatar;
+    @Embedded
+    private Image background;
     private String pageName;
     private String introduce;
     @DBRef
