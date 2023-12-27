@@ -1,22 +1,17 @@
 package com.social.socialnetwork.Service.Iplm;
 
-import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
 import com.social.socialnetwork.Service.CommentService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.CommentReq;
-import com.social.socialnetwork.dto.PostResp;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

@@ -31,7 +31,10 @@ public class StoryController {
         }
 
     }
-
+    @GetMapping("/list-story")
+    public ResponseEntity<?> getListStory(){
+        return ResponseEntity.ok(new ResponseDTO(true,"Success",storyService.getAllStory()));
+    }
     @PutMapping( "/story")
     public ResponseEntity<?> disabledStory(@ModelAttribute StoryReq storyReq)
             throws IOException {

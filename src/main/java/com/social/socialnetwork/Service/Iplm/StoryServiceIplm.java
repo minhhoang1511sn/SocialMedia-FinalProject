@@ -9,6 +9,8 @@ import com.social.socialnetwork.repository.PageRepository;
 import com.social.socialnetwork.repository.StoryRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,4 +75,18 @@ public class StoryServiceIplm implements StoryService {
 
         return true;
     }
+
+  @Override
+  public List<Story> getAllStory() {
+      User curUser = userService.findById(Utils.getIdCurrentUser());
+      List<Story> listStory = storyRepository.findAll();
+      List<Story> storyShow = new ArrayList<>();
+    for (Story s: listStory) {
+      if(s.isEnabled() && curUser.getUserFriend().contains(s.getUser().getId()))
+      {
+        storyShow.add(s);
+      }
+    }
+    return storyShow;
+  }
 }

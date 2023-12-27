@@ -396,6 +396,9 @@ public class UserServiceIplm implements UserService {
     public List<User> findActiveFriend() {
         User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
         List<String> friends = curUser.getUserFriend();
+        if(friends== null){
+            friends = new ArrayList<>();
+        }
         List<User> activeFriend = new ArrayList<>();
 
         for (String userId: friends) {
