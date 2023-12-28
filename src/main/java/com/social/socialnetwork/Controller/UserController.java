@@ -106,13 +106,17 @@ public class UserController {
 
     @GetMapping("/is-Friend")
     public ResponseEntity<?> getIsFriend(@RequestParam("friendId") String friendId){
-        User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
-        User friend = userRepository.findUserById(friendId);
-        Boolean isFriend = friendService.isFriend(curUser,friend);
-        if(isFriend){
-            return ResponseEntity.ok().body(new ResponseDTO(true,"Success",friend));       }
-        else {
-            return ResponseEntity.ok().body(new ResponseDTO(false,"User isn't friend",null));}
+        if(!friendId.equals(Utils.getIdCurrentUser())) {
+            User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
+            User friend = userRepository.findUserById(friendId);
+            Boolean isFriend = friendService.isFriend(curUser, friend);
+            if (isFriend) {
+                return ResponseEntity.ok().body(new ResponseDTO(true, "Success", friend));
+            } else {
+                return ResponseEntity.ok().body(new ResponseDTO(false, "User isn't friend", null));
+            }
+        }
+        return  null;
     }
     @GetMapping("/mutual-friends")
     public ResponseEntity<?> MutualFriends(@RequestParam("userId") String userId){

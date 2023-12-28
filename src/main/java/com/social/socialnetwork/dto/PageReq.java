@@ -14,4 +14,6 @@ public class PageReq {
     private String introduce;
     private Date createTime;
     private Boolean enabled;
+    private String category;
+    private String contact;
 }

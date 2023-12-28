@@ -40,7 +40,6 @@ public class PostServiceIplm implements PostService {
   private final FriendService friendService;
   private final PageRepository pageRepository;
   private final PostLikeRepository postLikeRepository;
-  private final ModelMapper modelMapper;
 
   @Override
   public Post createPost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
@@ -66,11 +65,20 @@ public class PostServiceIplm implements PostService {
       Date now = new Date();
       post.setCreateDate(new Date(now.getTime()));
       if (postReq.getPageId() != null) {
-        Page p = pageRepository.getById(postReq.getPageId());
-        post.setPage(p);
+        post.setPageId(postReq.getPageId());
       }
       postRepository.save(post);
-
+      if (postReq.getPageId() != null) {
+        Page p = pageRepository.getById(postReq.getPageId());
+        List<Post> postPage = new ArrayList<>();
+        if(p.getPosts()!=null)
+          postPage = p.getPosts();
+        postPage.add(post);
+        p.setPosts(postPage);
+        pageRepository.save(p);
+        user.setPage(p);
+        userRepository.save(user);
+      }
 
       List<Image> listImg = new ArrayList<>();
       if (images != null) {
@@ -161,6 +169,15 @@ public class PostServiceIplm implements PostService {
   }
 
   @Override
+  public List<Post> getAllPostByPageId(String id) {
+    Page p = pageRepository.getById(id);
+    if(p!=null){
+      return p.getPosts();
+    }
+    return null;
+  }
+
+  @Override
   public Post updatePost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
     Post postUpdate = postRepository.findById(postReq.getId()).orElse(null);
     String idCurrentUser = Utils.getIdCurrentUser();
@@ -190,16 +207,32 @@ public class PostServiceIplm implements PostService {
         postUpdate.setFeeling(postReq.getFeeling());
         postUpdate.setComments(commentList);
         if (postReq.getPageId() != null) {
-          Page p = pageRepository.getById(postReq.getPageId());
-          postUpdate.setPage(p);
+          postUpdate.setPageId(postReq.getPageId());
         }
         Date now = new Date();
         postUpdate.setCreateDate(new Date(
             now.getTime() - (postReq.getCreateDate() != null ? postReq.getCreateDate().getTime()
                 : 0)));
         postUpdate.setPostType(postType);
-        return postRepository.save(postUpdate);
-      } else {
+        postRepository.save(postUpdate);
+      if (postReq.getPageId() != null) {
+        Page p = pageRepository.getById(postReq.getPageId());
+        List<Post> postPage = new ArrayList<>();
+        if(p.getPosts()!=null)
+          postPage = p.getPosts();
+        for (Post po : postPage) {
+          if(po.getId().equals(postUpdate.getId()))
+          {
+            postPage.remove(po);
+            postPage.add(postUpdate);
+          }
+        }
+        postPage.add(postUpdate);
+        p.setPosts(postPage);
+        pageRepository.save(p);
+      }
+      return postUpdate;
+    } else {
         throw new AppException(400, "Post does not exists");
       }
   }
@@ -229,9 +262,9 @@ public class PostServiceIplm implements PostService {
           post.setImages(imageList);
           List<Image> imageUser = user.getImages();
 
-          if (post.getPage() != null) {
+          if (post.getPageId() != null) {
               List<Image> imagePage = user.getImages();
-              Page p = post.getPage();
+              Page p = pageRepository.getById(post.getPageId());
               if (imagePage == null) {
                   imagePage = new ArrayList<>();
               }
@@ -278,9 +311,9 @@ public class PostServiceIplm implements PostService {
           videoList.add(video);
           post.setVideos(videoList);
 
-          if (post.getPage() != null) {
+          if (post.getPageId() != null) {
               List<Video> videoPage = user.getVideos();
-              Page p = post.getPage();
+              Page p = pageRepository.getById(post.getPageId());
               if (videoPage == null) {
                   videoPage = new ArrayList<>();
               }

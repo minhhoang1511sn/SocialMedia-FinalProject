@@ -6,6 +6,7 @@ import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.dto.ResponseDTO;
 import com.social.socialnetwork.model.Page;
 import com.social.socialnetwork.model.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,46 @@ public class PageController {
         else
         {
             return ResponseEntity.ok(new ResponseDTO(true,"you don't have page",null));
+        }
+    }
+    @GetMapping("/all-page")
+    public ResponseEntity<?> getAllPage(){
+        List<Page> page = pageService.getAllPage();
+        if(page!=null)
+            return ResponseEntity.ok(new ResponseDTO(true,"Success",page));
+        else
+        {
+            return ResponseEntity.ok(new ResponseDTO(true,"Don't have any page",null));
+        }
+    }
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<?> getPageById(@PathVariable String id){
+        Page page = pageService.getById(id);
+        if(page!=null)
+            return ResponseEntity.ok(new ResponseDTO(true,"Success",page));
+        else
+        {
+            return ResponseEntity.ok(new ResponseDTO(true,"Don't have any page",null));
+        }
+    }
+    @GetMapping("/all-page-followed")
+    public ResponseEntity<?> getAllPageFollowed(){
+        List<Page> page = pageService.getAllPageLiked();
+        if(page!=null)
+            return ResponseEntity.ok(new ResponseDTO(true,"Success",page));
+        else
+        {
+            return ResponseEntity.ok(new ResponseDTO(true,"you don't follow any page",null));
+        }
+    }
+    @GetMapping("/is-followed")
+    public ResponseEntity<?> isFollowedPage(@RequestParam String pageId){
+        boolean check = pageService.isFollowed(pageId);
+        if(check)
+            return ResponseEntity.ok(new ResponseDTO(true,"is Followed",null));
+        else
+        {
+            return ResponseEntity.ok(new ResponseDTO(false,"isn't Followed",null));
         }
     }
     @PostMapping(value = "/page", consumes = {

@@ -18,6 +18,7 @@ public interface PostService {
      Post findById(String id);
      boolean deletePost(String id);
      List<Post> getAllPost(String id);
+     List<Post> getAllPostByPageId(String id);
      Post updatePost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId);
      Image uploadImage(String postId, MultipartFile images) ;
      Video uploadVideo(String postId, MultipartFile videos) ;

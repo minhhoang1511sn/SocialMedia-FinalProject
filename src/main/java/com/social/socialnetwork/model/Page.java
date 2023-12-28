@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter
@@ -24,11 +25,13 @@ public class Page {
     private Image background;
     private String pageName;
     private String introduce;
-    @DBRef
+    private String contact;
+    private String category;
+    @Field("posts")
     private List<Post> posts;
-    @DBRef
+    @Field("images")
     private List<Image> images;
-    @DBRef
+    @Field("videos")
     private List<Video> videos;
     private Date  createTime;
     private boolean enabled;

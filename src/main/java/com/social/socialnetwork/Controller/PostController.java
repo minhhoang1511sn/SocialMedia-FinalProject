@@ -46,6 +46,14 @@ public class PostController {
         String link = String.valueOf(httpServletRequest.getRequestURL());
         return link;
     }
+    @GetMapping(path="/post-by-page")
+    public ResponseEntity<?>  getPostsByPage(@RequestParam String id) {
+        try {
+            return ResponseEntity.ok(new ResponseDTO(true, "Success", postService.getAllPostByPageId(id)));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
+        }
+    }
     @PutMapping(value = "/update-post", consumes = {
             "multipart/form-data"})
     public ResponseEntity<?> updatePost(@ModelAttribute  PostReq postReq,@RequestParam(value = "image", required =

@@ -21,8 +21,7 @@ public class Post {
     private PostType postType;
     @Embedded
     private UserPost userPost;
-    @Embedded
-    private Page page;
+    private String pageId;
     @Field("userTags")
     private List<User> usertags;
     @Field("comments")

@@ -44,6 +44,8 @@ public class PageServiceIplm implements PageService {
       page.setIntroduce(pageReq.getIntroduce());
       page.setCountMember((long) 0);
       page.setVideos(null);
+      page.setCategory(pageReq.getCategory());
+      page.setContact(pageReq.getContact());
       List<Image> pageImgs = new ArrayList<>();
       if (images != null) {
         Image avt = new Image();
@@ -96,6 +98,8 @@ public class PageServiceIplm implements PageService {
       page.setPageName(pageReq.getPageName());
       page.setIntroduce(pageReq.getIntroduce());
       page.setVideos(null);
+      page.setCategory(pageReq.getCategory());
+      page.setContact(pageReq.getContact());
       List<Image> pageImgs = new ArrayList<>();
 
       if(page.getImages()!=null)
@@ -134,6 +138,22 @@ public class PageServiceIplm implements PageService {
   }
 
   @Override
+  public Page getById(String id) {
+    return pageRepository.getById(id);
+  }
+
+  @Override
+  public List<Page> getAllPage() {
+    return pageRepository.findAll();
+  }
+
+  @Override
+  public List<Page> getAllPageLiked() {
+    User cur = userRepository.findUserById(Utils.getIdCurrentUser());
+    return cur.getPagefollowed();
+  }
+
+  @Override
   public boolean deletePage(String id) {
     Page pageDel = pageRepository.findById(id).orElse(null);
 
@@ -158,6 +178,22 @@ public class PageServiceIplm implements PageService {
       pageReq.setEnabled(true);
     }
     return pageReq.getEnabled();
+  }
+
+  @Override
+  public boolean isFollowed(String pageId) {
+    User cur = userRepository.findUserById(Utils.getIdCurrentUser());
+    Page testPage = pageRepository.getById(pageId);
+    List<Page> pageFollowed = new ArrayList<>();
+    if(cur.getPagefollowed()!=null)
+    {
+      pageFollowed = cur.getPagefollowed();
+    }
+    for (Page test: pageFollowed) {
+      if(test.getId().equals(testPage.getId()))
+        return true;
+    }
+    return false;
   }
 
   @Override

@@ -13,7 +13,7 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query("{ 'user' : ?0 }")
     List<Post> findAllrderByCreateDate(User user);
     @Query(sort = "{ createDate : -1 }")
-    List<Post> findAllPostByCreateDateAndUserPostAndPage();
+    List<Post> findAllPostByCreateDateAndUserPostAndPageId();
     @Query("{'_id' : ?0}")
     Post getById(String id);
     @Query(value = "{ 'userId' : ?0 }", sort = "{ 'createDate' : -1 }")
