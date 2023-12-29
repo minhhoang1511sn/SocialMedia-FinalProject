@@ -74,6 +74,13 @@ public class PageServiceIplm implements PageService {
       page.setEnabled(true);
       pageRepository.save(page);
       user.setPage(page);
+       List<Page> flPage= new ArrayList<>();
+      if(user.getPagefollowed()!=null)
+      {
+        flPage  = new ArrayList<>(user.getPagefollowed());
+      }
+      flPage.add(page);
+      user.setPagefollowed(flPage);
       userRepository.save(user);
       return page;
     } else {
