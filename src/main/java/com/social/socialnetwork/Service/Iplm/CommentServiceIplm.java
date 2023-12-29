@@ -54,9 +54,6 @@ public class CommentServiceIplm implements CommentService {
         Page p = pageRepository.getById(commentReq.getPageId());
         comment.setPage(p);
       }
-      if (user.getImage() != null) {
-        userComment.setAvatar(user.getImage().getImgLink());
-      }
       userComment.setFirstName(user.getFirstName());
       userComment.setLastName(user.getLastName());
       userComment.setUserId(user.getId());

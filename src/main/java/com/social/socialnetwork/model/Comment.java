@@ -28,12 +28,6 @@ public class Comment {
     @Transient
     private Comment parentComment;
     private Long numReply;
-    @DBRef
-    @Transient
-    private Image image;
-    @DBRef
-    @Transient
-    private Video video;
 
     private Boolean enabled;
 
