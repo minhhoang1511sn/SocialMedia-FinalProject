@@ -390,6 +390,18 @@ public class PostServiceIplm implements PostService {
       }
     }
     if(curU.getPosts()!=null)
+    {
+      List<Post> postPage = curU.getPosts();
+      List<Post> postPageResult = new ArrayList<>();
+      for (Post p: postPage ) {
+        if(p.getPagePost()!=null)
+        {
+          postPageResult.add(p);
+        }
+      }
+      newfeeds.addAll(postPageResult);
+    }
+    if(curU.getPosts()!=null)
       newfeeds.addAll(curU.getPosts());
     newfeeds.sort(Comparator.comparing(Post::getCreateDate).reversed());
     List<String> postLike = new ArrayList<>();
