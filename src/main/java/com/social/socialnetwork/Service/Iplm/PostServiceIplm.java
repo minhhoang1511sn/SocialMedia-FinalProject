@@ -67,23 +67,7 @@ public class PostServiceIplm implements PostService {
       post.setCreateDate(new Date(now.getTime()));
       if (postReq.getPage() != null) {
         Page p = pageRepository.getById(postReq.getPage());
-        PagePost pp = new PagePost();
-        if(p.getAvatar()!=null)
-        pp.setAvatar(p.getAvatar());
-        pp.setPageId(p.getId());
-        pp.setPageName(p.getPageName());
-        pp.setAdmin(p.getAdmin());
-        pp.setCategory(p.getCategory());
-        pp.setContact(p.getContact());
-        pp.setBackground(p.getBackground());
-        pp.setCountMember(p.getCountMember());
-        pp.setEnabled(p.isEnabled());
-        pp.setIntroduce(p.getIntroduce());
-        pp.setCreateTime(p.getCreateTime());
-        pp.setPosts(p.getPosts());
-        pp.setImages(p.getImages());
-        pp.setVideos(p.getVideos());
-
+        PagePost pp = getPagePost(p);
         pagePostRepository.save(pp);
         post.setPagePost(pp);
       }
@@ -91,12 +75,19 @@ public class PostServiceIplm implements PostService {
       if (postReq.getPage() != null) {
         Page p = pageRepository.getById(postReq.getPage());
         List<Post> postPage = new ArrayList<>();
-        if(p.getPosts()!=null)
+        if(p!=null)
+        {
+          if(p.getPosts()==null)
+          {
+            p.setPosts(new ArrayList<>());
+          }
           postPage = p.getPosts();
-        postPage.add(post);
-        p.setPosts(postPage);
-        pageRepository.save(p);
-        user.setPage(p);
+          postPage.add(post);
+          p.setPosts(postPage);
+          pageRepository.save(p);
+          user.setPage(p);
+        }
+
         userRepository.save(user);
       }
 
@@ -142,6 +133,29 @@ public class PostServiceIplm implements PostService {
     } else {
       throw new AppException(404, "Product or Comment not exits.");
     }
+  }
+
+  private PagePost getPagePost(Page p) {
+    PagePost pp = new PagePost();
+    if(p !=null ) {
+      if(p.getAvatar()!=null)
+          pp.setAvatar(p.getAvatar());
+      pp.setPageId(p.getId());
+      pp.setPageName(p.getPageName());
+      pp.setAdmin(p.getAdmin());
+      pp.setCategory(p.getCategory());
+      pp.setContact(p.getContact());
+      pp.setBackground(p.getBackground());
+      pp.setCountMember(p.getCountMember());
+      pp.setEnabled(p.isEnabled());
+      pp.setIntroduce(p.getIntroduce());
+      pp.setCreateTime(p.getCreateTime());
+      pp.setPosts(p.getPosts());
+      pp.setImages(p.getImages());
+      pp.setVideos(p.getVideos());
+      pagePostRepository.save(pp);
+    }
+    return pp;
   }
 
   @Override

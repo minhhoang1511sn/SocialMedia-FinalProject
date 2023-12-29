@@ -14,6 +14,8 @@ public interface FriendService {
 
      void saveFriend(User userDto1, String id) throws NullPointerException;
 
+     boolean DontAccept(String friendId);
+
      List MutualFriends(String id);
      boolean unFriend(String id);
      User findById(String id);

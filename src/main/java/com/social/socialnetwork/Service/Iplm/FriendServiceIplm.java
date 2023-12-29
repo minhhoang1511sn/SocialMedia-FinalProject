@@ -117,6 +117,23 @@ public class FriendServiceIplm implements FriendService {
   }
 
   @Override
+  public boolean DontAccept(String friendId) {
+    User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
+    if(curUser.getUserRequest()!=null)
+    {
+      List<String> userReq = curUser.getUserRequest();
+      if(userReq.contains(friendId))
+      {
+        userReq.remove(friendId);
+        curUser.setUserRequest(userReq);
+        userRepository.save(curUser);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
   public Boolean isFriend(User user1, User user2) {
     User UserFriend = userRepository.findUserById(user2.getId());
     User curUser = userRepository.findUserById(user1.getId());

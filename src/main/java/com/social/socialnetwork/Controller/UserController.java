@@ -126,13 +126,18 @@ public class UserController {
     }
     @PostMapping("/add-friend")
     public ResponseEntity<?> addFriend( @RequestParam("friendId") String friendId){
-        User  currentUser = userService.findById(Utils.getIdCurrentUser());
-        User  friendUser = userService.findById(friendId);
-        friendService.saveFriend(currentUser,friendId);
-        if(friendService.isFriend(currentUser,friendUser))
-        return ResponseEntity.ok("Friend added successfully");
-        else
-            return ResponseEntity.ok("FriendRequest is sent");
+        if(!Utils.getIdCurrentUser().equals(friendId))
+        {
+            User  currentUser = userService.findById(Utils.getIdCurrentUser());
+            User  friendUser = userService.findById(friendId);
+            friendService.saveFriend(currentUser,friendId);
+            if(friendService.isFriend(currentUser,friendUser))
+                return ResponseEntity.ok("Friend added successfully");
+            else
+                return ResponseEntity.ok("FriendRequest is sent");
+        }
+       else
+            return ResponseEntity.ok("Can't add friend yourself");
     }
     @DeleteMapping("/un-friend")
     public ResponseEntity<?> unFriend( @RequestParam("friendId") String friendId){
@@ -142,6 +147,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ResponseDTO(false, "Friend id not exixts",null));
 
+    }
+    @GetMapping("/cancel-friend-request")
+    public ResponseEntity<?> clearFriendReq( @RequestParam("friendId") String friendId){
+        if (friendService.DontAccept(friendId)){
+            return ResponseEntity.ok(new ResponseDTO(true, "Success clear friend Request", null));
+        }
+        return ResponseEntity.ok(new ResponseDTO(true, "Success clear friend Request", null));
     }
     @PutMapping(value = "/user/avatar",consumes = {
             "multipart/form-data"})
