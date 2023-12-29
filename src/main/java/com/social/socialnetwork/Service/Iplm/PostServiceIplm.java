@@ -64,12 +64,12 @@ public class PostServiceIplm implements PostService {
       post.setFeeling(postReq.getFeeling());
       Date now = new Date();
       post.setCreateDate(new Date(now.getTime()));
-      if (postReq.getPageId() != null) {
-        post.setPageId(postReq.getPageId());
+      if (postReq.getPage() != null) {
+        post.setPage(pageRepository.getById(postReq.getPage()));
       }
       postRepository.save(post);
-      if (postReq.getPageId() != null) {
-        Page p = pageRepository.getById(postReq.getPageId());
+      if (postReq.getPage() != null) {
+        Page p = pageRepository.getById(postReq.getPage());
         List<Post> postPage = new ArrayList<>();
         if(p.getPosts()!=null)
           postPage = p.getPosts();
@@ -206,8 +206,8 @@ public class PostServiceIplm implements PostService {
         postUpdate.setUserPost(u);
         postUpdate.setFeeling(postReq.getFeeling());
         postUpdate.setComments(commentList);
-        if (postReq.getPageId() != null) {
-          postUpdate.setPageId(postReq.getPageId());
+        if (postReq.getPage() != null) {
+          postUpdate.setPage(pageRepository.getById(postReq.getPage()));
         }
         Date now = new Date();
         postUpdate.setCreateDate(new Date(
@@ -215,8 +215,8 @@ public class PostServiceIplm implements PostService {
                 : 0)));
         postUpdate.setPostType(postType);
         postRepository.save(postUpdate);
-      if (postReq.getPageId() != null) {
-        Page p = pageRepository.getById(postReq.getPageId());
+      if (postReq.getPage() != null) {
+        Page p = pageRepository.getById(postReq.getPage());
         List<Post> postPage = new ArrayList<>();
         if(p.getPosts()!=null)
           postPage = p.getPosts();
@@ -262,9 +262,9 @@ public class PostServiceIplm implements PostService {
           post.setImages(imageList);
           List<Image> imageUser = user.getImages();
 
-          if (post.getPageId() != null) {
+          if (post.getPage() != null) {
               List<Image> imagePage = user.getImages();
-              Page p = pageRepository.getById(post.getPageId());
+              Page p = post.getPage();
               if (imagePage == null) {
                   imagePage = new ArrayList<>();
               }
@@ -311,9 +311,9 @@ public class PostServiceIplm implements PostService {
           videoList.add(video);
           post.setVideos(videoList);
 
-          if (post.getPageId() != null) {
+          if (post.getPage() != null) {
               List<Video> videoPage = user.getVideos();
-              Page p = pageRepository.getById(post.getPageId());
+              Page p = post.getPage();
               if (videoPage == null) {
                   videoPage = new ArrayList<>();
               }

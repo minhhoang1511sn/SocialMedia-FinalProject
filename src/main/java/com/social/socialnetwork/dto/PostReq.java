@@ -17,7 +17,7 @@ public class PostReq {
     private String content;
     private PostType postType;
     private Date createDate;
-    private String pageId;
+    private String page;
     private boolean enabled;
     private String feeling;
 
