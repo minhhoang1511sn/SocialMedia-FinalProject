@@ -57,6 +57,10 @@ public class CommentServiceIplm implements CommentService {
       userComment.setFirstName(user.getFirstName());
       userComment.setLastName(user.getLastName());
       userComment.setUserId(user.getId());
+      if(user.getImage()!=null)
+      {
+        userComment.setAvatar(user.getImage().toString());
+      }
       userCommentRepository.save(userComment);
       comment.setUserComment(userComment);
       commentRepository.save(comment);
