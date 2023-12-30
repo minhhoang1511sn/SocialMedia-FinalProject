@@ -200,7 +200,10 @@ public class UserServiceIplm implements UserService {
         imgUrl.setPostType(PostType.PUBLIC);
         imageRepository.save(imgUrl);
         user.setImage(imgUrl);
-        List<Image> imageUser = imageRepository.getAllImageByUser(user);
+        List<Image> imageUser = new ArrayList<>();
+        if(user.getImages()!=null){
+             imageUser = user.getImages();
+        }
         imageUser.add(imgUrl);
         user.setImages(imageUser);
         userRepository.save(user);
@@ -385,7 +388,10 @@ public class UserServiceIplm implements UserService {
         imgUrl.setPostType(PostType.PUBLIC);
         imageRepository.save(imgUrl);
         user.setBackground(imgUrl);
-        List<Image> imageUser = imageRepository.getAllImageByUser(user);
+        List<Image> imageUser = new ArrayList<>();
+        if(user.getImages()!=null){
+            imageUser = user.getImages();
+        }
         imageUser.add(imgUrl);
         user.setImages(imageUser);
         userRepository.save(user);
