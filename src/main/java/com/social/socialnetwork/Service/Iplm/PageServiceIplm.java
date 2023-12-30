@@ -135,7 +135,7 @@ public class PageServiceIplm implements PageService {
         page.setBackground(bg);
         pageImgs.add(bg);
         page.setImages(pageImgs);
-      } 
+      }
       pageRepository.save(page);
       user.setPage(page);
       userRepository.save(user);

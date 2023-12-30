@@ -394,7 +394,7 @@ public class PostServiceIplm implements PostService {
       List<Post> postPage = curU.getPosts();
       List<Post> postPageResult = new ArrayList<>();
       for (Post p: postPage ) {
-        if(p.getPagePost()!=null)
+        if(p.getPagePost()!=null && !p.getPagePost().getAdmin().equals(Utils.getIdCurrentUser()))
         {
           postPageResult.add(p);
         }
