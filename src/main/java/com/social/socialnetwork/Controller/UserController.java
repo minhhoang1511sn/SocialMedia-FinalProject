@@ -109,8 +109,8 @@ public class UserController {
         if(!friendId.equals(Utils.getIdCurrentUser())) {
             User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
             User friend = userRepository.findUserById(friendId);
-            Boolean isFriend = friendService.isFriend(curUser, friend);
-            if (isFriend) {
+            String isFriend = friendService.isFriend(curUser, friend);
+            if (isFriend!=null && curUser.getUserFriend().contains(friendId)) {
                 return ResponseEntity.ok().body(new ResponseDTO(true, "Success", friend));
             } else {
                 return ResponseEntity.ok().body(new ResponseDTO(false, "User isn't friend", null));
@@ -131,7 +131,7 @@ public class UserController {
             User  currentUser = userService.findById(Utils.getIdCurrentUser());
             User  friendUser = userService.findById(friendId);
             friendService.saveFriend(currentUser,friendId);
-            if(friendService.isFriend(currentUser,friendUser))
+            if(friendService.isFriend(currentUser,friendUser)!=null && currentUser.getUserFriend().contains(friendId))
                 return ResponseEntity.ok("Friend added successfully");
             else
                 return ResponseEntity.ok("FriendRequest is sent");

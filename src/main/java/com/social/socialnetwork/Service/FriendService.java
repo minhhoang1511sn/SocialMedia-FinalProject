@@ -5,7 +5,7 @@ import com.social.socialnetwork.model.User;
 import java.util.List;
 
 public interface FriendService {
-     Boolean isFriend(User user1, User user2);
+     String isFriend(User user1, User user2);
      List<User> getUserFriends(String id);
 
      List<User> getUserRequestFriends(String id);

@@ -65,7 +65,7 @@ public class FriendServiceIplm implements FriendService {
     List<User> suggestFriend = new ArrayList<>();
     user.forEach(
         u -> {
-          if (!isFriend(curU, u) && u != curU) {
+          if (isFriend(curU, u)== null && u != curU) {
             suggestFriend.add(u);
           }
         }
@@ -78,7 +78,7 @@ public class FriendServiceIplm implements FriendService {
 
     User UserFriend = userRepository.findUserById(id);
     User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
-    if (!isFriend(curUser, UserFriend)) {
+    if (isFriend(curUser, UserFriend)==null) {
       if (UserFriend.getUserRequest() == null) {
         UserFriend.setUserRequest(new ArrayList<>());
       }
@@ -134,18 +134,35 @@ public class FriendServiceIplm implements FriendService {
   }
 
   @Override
-  public Boolean isFriend(User user1, User user2) {
+  public String isFriend(User user1, User user2) {
     User UserFriend = userRepository.findUserById(user2.getId());
     User curUser = userRepository.findUserById(user1.getId());
     List<String> userFriend = UserFriend.getUserFriend();
     List<String> curUserFriend = curUser.getUserFriend();
     if (userFriend != null && curUserFriend != null) {
         if (userFriend.contains(curUser.getId()) && curUserFriend.contains(UserFriend.getId())) {
-            return true;
+            return "user 1 and user 2  is a friend";
+        }
+        else
+        {
+          List<String> curUserFriendReq = curUser.getUserRequest();
+          List<String> userFriendReq = UserFriend.getUserRequest();
+          if(!userFriendReq.contains(curUser.getId()) && !curUserFriendReq.contains(UserFriend.getId()))
+          {
+            return "user 1 and user 2  don't have friend request";
+          }
+          else if(userFriend.contains(curUser.getId()) && !curUserFriend.contains(UserFriend.getId()))
+          {
+            return "you have been sent friend request to user 2";
+          }
+          else if(!userFriend.contains(curUser.getId()) && curUserFriend.contains(UserFriend.getId()))
+          {
+            return "user 2 sent friend request to you";
+          }
         }
     }
 
-    return false;
+    return null;
   }
 
 
@@ -170,7 +187,7 @@ public class FriendServiceIplm implements FriendService {
     User UserFriend = userRepository.findUserById(id);
     User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
 
-    if (isFriend(UserFriend, curUser)) {
+    if (isFriend(UserFriend, curUser)!=null) {
       List<String> curUserFr = curUser.getUserFriend();
       List<String> friendUserFr = UserFriend.getUserFriend();
       curUserFr.remove(UserFriend.getId());

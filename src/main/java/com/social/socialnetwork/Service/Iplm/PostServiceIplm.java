@@ -397,7 +397,7 @@ public class PostServiceIplm implements PostService {
       pageFollow = curU.getPagefollowed();
     List<Post> newfeeds = new ArrayList<>();
     for (User u: users) {
-      if (friendService.isFriend(curU, u) && u.getPosts() != null) {
+      if (friendService.isFriend(curU, u)!=null && u.getPosts() != null) {
         newfeeds.addAll(u.getPosts());
       }
     }
