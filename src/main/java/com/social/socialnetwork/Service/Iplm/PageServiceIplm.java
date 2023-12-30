@@ -47,7 +47,10 @@ public class PageServiceIplm implements PageService {
       page.setCategory(pageReq.getCategory());
       page.setContact(pageReq.getContact());
       List<Image> pageImgs = new ArrayList<>();
-      if (images != null) {
+      if (page.getImages() != null) {
+        pageImgs = page.getImages();
+      }
+      if(images!=null){
         Image avt = new Image();
         String img = upAvartar(images);
         avt.setImgLink(img);
@@ -132,9 +135,7 @@ public class PageServiceIplm implements PageService {
         page.setBackground(bg);
         pageImgs.add(bg);
         page.setImages(pageImgs);
-      } else {
-        page.setImages(null);
-      }
+      } 
       pageRepository.save(page);
       user.setPage(page);
       userRepository.save(user);
