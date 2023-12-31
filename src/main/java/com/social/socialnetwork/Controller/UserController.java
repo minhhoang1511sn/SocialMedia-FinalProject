@@ -98,25 +98,22 @@ public class UserController {
         return ResponseEntity.ok().body(new ResponseDTO(true,"Password Changed Successfully",
                 null));
     }
-    @GetMapping("/list-Friend")
-    public ResponseEntity<?> getFriendList(@RequestParam("userId") String userId){
+    @GetMapping("/list-Friend/{userId}")
+    public ResponseEntity<?> getFriendList(@PathVariable String userId){
         List<User> friendList = friendService.getUserFriends(userId);
         return ResponseEntity.ok().body(new ResponseDTO(true,"Success",friendList));
     }
 
     @GetMapping("/is-Friend")
-    public ResponseEntity<?> getIsFriend(@RequestParam("friendId") String friendId){
+    public String getIsFriend(@RequestParam("friendId") String friendId){
+        String isFriend = null;
         if(!friendId.equals(Utils.getIdCurrentUser())) {
             User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
             User friend = userRepository.findUserById(friendId);
-            String isFriend = friendService.isFriend(curUser, friend);
-            if (isFriend!=null && curUser.getUserFriend().contains(friendId)) {
-                return ResponseEntity.ok().body(new ResponseDTO(true, "Success", friend));
-            } else {
-                return ResponseEntity.ok().body(new ResponseDTO(false, "User isn't friend", null));
-            }
-        }
-        return  null;
+             isFriend = friendService.isFriend(curUser, friend);
+
+
+        }return isFriend;
     }
     @GetMapping("/mutual-friends")
     public ResponseEntity<?> MutualFriends(@RequestParam("userId") String userId){
@@ -131,7 +128,7 @@ public class UserController {
             User  currentUser = userService.findById(Utils.getIdCurrentUser());
             User  friendUser = userService.findById(friendId);
             friendService.saveFriend(currentUser,friendId);
-            if(friendService.isFriend(currentUser,friendUser)!=null && currentUser.getUserFriend().contains(friendId))
+            if(friendService.isFriend(currentUser,friendUser)!=null && currentUser.getUserFriend()!=null && currentUser.getUserFriend().contains(friendId))
                 return ResponseEntity.ok("Friend added successfully");
             else
                 return ResponseEntity.ok("FriendRequest is sent");

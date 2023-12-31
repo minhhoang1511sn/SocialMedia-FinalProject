@@ -100,7 +100,13 @@ public class PostController {
         return ResponseEntity.ok(new ResponseDTO(true,"Success",posts));
         else return ResponseEntity.ok(new ResponseDTO(false,"Invalid",null));
     }
-
+    @GetMapping("/posts-not-page")
+    public ResponseEntity<?> listPostNotPage(@RequestParam  String userId){
+        List<Post> posts = postService.getAllPostByUserNotPage(userId);
+        if(posts!=null)
+            return ResponseEntity.ok(new ResponseDTO(true,"Success",posts));
+        else return ResponseEntity.ok(new ResponseDTO(false,"Invalid",null));
+    }
     @GetMapping("/newfeeds")
     public ResponseEntity<?> gettingNewFeeds(){
         List<Post> posts = postService.gettingPostByFriend();

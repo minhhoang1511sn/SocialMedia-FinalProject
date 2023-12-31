@@ -59,7 +59,7 @@ public class CommentServiceIplm implements CommentService {
       userComment.setUserId(user.getId());
       if(user.getImage()!=null)
       {
-        userComment.setAvatar(user.getImage().toString());
+        userComment.setAvatar(user.getImage().getImgLink());
       }
       userCommentRepository.save(userComment);
       comment.setUserComment(userComment);
@@ -92,11 +92,16 @@ public class CommentServiceIplm implements CommentService {
     if (check) {
       Comment commentUpdate = findById(commentReq.getId());
       List<UserComment> uc = userCommentRepository.findAllByUserId(userId);
+      User ucur = userRepository.findUserById(userId);
       UserComment u = uc.get(0);
       if (commentUpdate != null) {
         commentUpdate.setContent(commentReq.getContent());
         commentUpdate.setUserComment(u);
         commentUpdate.setRate(commentReq.getRate());
+        if(ucur.getImage()!=null)
+        {
+          u.setAvatar(ucur.getImage().getImgLink());
+        }
         if (commentReq.getPageId() != null) {
           Page p = pageRepository.getById(commentReq.getPageId());
           commentUpdate.setPage(p);

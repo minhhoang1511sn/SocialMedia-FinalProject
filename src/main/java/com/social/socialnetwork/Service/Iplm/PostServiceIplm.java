@@ -5,24 +5,16 @@ import com.social.socialnetwork.Service.FriendService;
 import com.social.socialnetwork.Service.PostService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.PostReq;
-import com.social.socialnetwork.dto.UserReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -46,9 +38,11 @@ public class PostServiceIplm implements PostService {
   public Post createPost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
     String idCurrentUser = Utils.getIdCurrentUser();
     boolean check = userRepository.existsById(idCurrentUser);
+
     if (check) {
       Post post = new Post();
       User user = userService.findById(idCurrentUser);
+
       UserPost userPost = new UserPost();
       userPost.setUserId(user.getId());
         if (user.getImage() != null) {
@@ -57,6 +51,7 @@ public class PostServiceIplm implements PostService {
       userPost.setFirstName(user.getFirstName());
       userPost.setLastName(user.getLastName());
       userPostRepository.save(userPost);
+
       post.setContent(postReq.getContent());
       post.setCountLike(0L);
       post.setPostType(PostType.PUBLIC);
@@ -65,23 +60,25 @@ public class PostServiceIplm implements PostService {
       post.setFeeling(postReq.getFeeling());
       Date now = new Date();
       post.setCreateDate(new Date(now.getTime()));
+
+      //khi pageid c thì đăng voi tư các page
       if (postReq.getPage() != null) {
         Page p = pageRepository.getById(postReq.getPage());
         PagePost pp = getPagePost(p);
-        pagePostRepository.save(pp);
         post.setPagePost(pp);
       }
+
       postRepository.save(post);
+      //get list posst của page
       if (postReq.getPage() != null) {
         Page p = pageRepository.getById(postReq.getPage());
         List<Post> postPage = new ArrayList<>();
         if(p!=null)
         {
-          if(p.getPosts()==null)
+          if(p.getPosts()!=null)
           {
-            p.setPosts(new ArrayList<>());
+           postPage = p.getPosts();
           }
-          postPage = p.getPosts();
           postPage.add(post);
           p.setPosts(postPage);
           pageRepository.save(p);
@@ -98,6 +95,10 @@ public class PostServiceIplm implements PostService {
           listImg.add(img);
         }
         post.setImages(listImg);
+        List<Image> userImg = new ArrayList<>();
+        if(user.getImages()!=null)
+          userImg = user.getImages();
+        userImg.addAll(listImg);
       }
       List<Video> videoList = new ArrayList<>();
       if (video != null) {
@@ -106,6 +107,11 @@ public class PostServiceIplm implements PostService {
           videoList.add(vd);
         }
         post.setVideos(videoList);
+        List<Video> uservideo = new ArrayList<>();
+        if(user.getVideos()!=null)
+          uservideo = user.getVideos();
+        uservideo.addAll(videoList);
+        user.setVideos(uservideo);
       }
       List<User> userTags = new ArrayList<>();
       if (tagsId!=null)
@@ -122,16 +128,16 @@ public class PostServiceIplm implements PostService {
         post.setUsertags(null);
       }
       postRepository.save(post);
-      List<Post> userPosts = user.getPosts();
-      if (userPosts == null) {
-        userPosts = new ArrayList<>();
+      List<Post> userPosts =new ArrayList<>();
+      if (user.getPosts() != null) {
+        userPosts = user.getPosts();
       }
       userPosts.add(post);
       user.setPosts(userPosts);
       userRepository.save(user);
       return post;
     } else {
-      throw new AppException(404, "Product or Comment not exits.");
+      throw new AppException(404, "Post not exits.");
     }
   }
 
@@ -220,19 +226,38 @@ public class PostServiceIplm implements PostService {
     }
     return null;
   }
-
+  @Override
+  public List<Post> getAllPostByUserNotPage(String id) {
+    User p = userRepository.findUserById(id);
+    List<Post> postByUserPage = p.getPosts();
+    List<Post> postByUserNotPage = new ArrayList<>();
+    for (Post pt :postByUserPage) {
+      if(pt.getPagePost()==null)
+      {
+        postByUserNotPage.add(pt);
+      }
+    }
+    return postByUserNotPage;
+  }
   @Override
   public Post updatePost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
     Post postUpdate = postRepository.findById(postReq.getId()).orElse(null);
     String idCurrentUser = Utils.getIdCurrentUser();
+    User u = userRepository.findUserById(idCurrentUser);
     if (postUpdate != null && postUpdate.getUserPost().getUserId().equals(idCurrentUser)) {
       List<Image> listImg = new ArrayList<>();
+
       if (images != null) {
         for (MultipartFile image : images) {
           Image img = uploadImage(postUpdate.getId(), image);
           listImg.add(img);
         }
         postUpdate.setImages(listImg);
+        List<Image> userImg = new ArrayList<>();
+        if(u.getImages()!=null)
+          userImg = u.getImages();
+        userImg.addAll(listImg);
+        u.setImages(userImg);
       }
       List<Video> videoList = new ArrayList<>();
       if (video != null) {
@@ -240,19 +265,25 @@ public class PostServiceIplm implements PostService {
           Video vd = uploadVideo(postUpdate.getId(), v);
           videoList.add(vd);
         }
+        postUpdate.setVideos(videoList);
+        List<Video> uservideo = new ArrayList<>();
+        if(u.getVideos()!=null)
+          uservideo = u.getVideos();
+        uservideo.addAll(videoList);
+        u.setVideos(uservideo);
       }
       postUpdate.setVideos(videoList);
         List<Comment> commentList = postUpdate.getComments();
         List<UserPost> uc = userPostRepository.findAllByUserId(idCurrentUser);
-        UserPost u = uc.get(0);
+        UserPost up = uc.get(0);
         PostType postType = postUpdate.getPostType();
         postUpdate.setContent(postReq.getContent());
-        postUpdate.setUserPost(u);
+        postUpdate.setUserPost(up);
         postUpdate.setFeeling(postReq.getFeeling());
         postUpdate.setComments(commentList);
-//        if (postReq.getPage() != null) {
-//          postUpdate.setPage(pageRepository.getById(postReq.getPage()));
-//        }
+        if (postReq.getPage() != null) {
+          postUpdate.setPagePost(pagePostRepository.getById(postReq.getPage()));
+        }
         Date now = new Date();
         postUpdate.setCreateDate(new Date(
             now.getTime() - (postReq.getCreateDate() != null ? postReq.getCreateDate().getTime()
@@ -274,7 +305,9 @@ public class PostServiceIplm implements PostService {
         postPage.add(postUpdate);
         p.setPosts(postPage);
         pageRepository.save(p);
+
       }
+      userRepository.save(u);
       return postUpdate;
     } else {
         throw new AppException(400, "Post does not exists");
@@ -286,8 +319,10 @@ public class PostServiceIplm implements PostService {
     String idCurrentUser = Utils.getIdCurrentUser();
     boolean check = userRepository.existsById(idCurrentUser);
     User user = userRepository.findUserById(idCurrentUser);
+
     Image image = new Image();
     Post post = postRepository.getById(postId);
+
       if (check && post != null) {
           try {
               String url = cloudinaryUpload.uploadImage(images, null);
@@ -295,36 +330,43 @@ public class PostServiceIplm implements PostService {
               image.setPostType(post.getPostType());
           } catch (IOException e) {
               throw new AppException(400, "Failed");
-          }
-          ;
+          };
+
           imageRepository.save(image);
-          List<Image> imageList = imageRepository.getAllImageByPost(post);
-          if (imageList == null || (long) imageList.size() == 0) {
-              imageList = new ArrayList<>();
-          }
-          imageList.add(image);
-          post.setImages(imageList);
-          List<Image> imageUser = user.getImages();
 
-          if (post.getPagePost() != null) {
-            PagePost p = post.getPagePost();
-            List<Image> imagePage = new ArrayList<>();
-            if(p.getVideos()!=null)
-            {
-              imagePage = p.getImages();
-            }
-              imagePage.add(image);
-              p.setImages(imagePage);
-          } else {
-              if (imageUser == null) {
-                  imageUser = new ArrayList<>();
-              }
-              imageUser.add(image);
-              user.setImages(imageUser);
-          }
+//          List<Image> imageList = imageRepository.getAllImageByPost(post);
+//          if (imageList == null || (long) imageList.size() == 0) {
+//              imageList = new ArrayList<>();
+//          }
+//          imageList.add(image);
+//          post.setImages(imageList);
+//
+//          List<Image> imageUser = new ArrayList<>();
+//          if(user.getImages()!=null){
+//            imageUser = user.getImages();
+//          }
+//
+//          if (post.getPagePost() != null) {
+//            PagePost p = post.getPagePost();
+//            List<Image> imagePage = new ArrayList<>();
+//            if(p.getImages()!=null)
+//            {
+//              imagePage = p.getImages();
+//            }
+//              imagePage.add(image);
+//              p.setImages(imagePage);
+//          } else {
+//              imageUser.add(image);
+//              user.setImages(imageUser);
+//          }
 
-          postRepository.save(post);
-          userRepository.save(user);
+//          postRepository.save(post);
+//          List<Post> postU = new ArrayList<>();
+//          if(user.getPosts()!=null)
+//            postU = user.getPosts();
+//            postU.add(post);
+//            user.setPosts(postU);
+//            userRepository.save(user);
           return image;
       } else {
           return null;
@@ -349,39 +391,39 @@ public class PostServiceIplm implements PostService {
           }
           ;
           videoRepository.save(video);
-          List<Video> videoList = videoRepository.getAllVideoByPost(post);
-          if (videoList == null || (long) videoList.size() == 0) {
-              videoList = new ArrayList<>();
-          }
-          videoList.add(video);
-          post.setVideos(videoList);
-
-          if (post.getPagePost() != null) {
-            PagePost p = post.getPagePost();
-            List<Video> videoPage = new ArrayList<>();
-            if(p.getVideos()!=null)
-            {
-               videoPage = p.getVideos();
-            }
-
-
-              if (videoPage == null) {
-                  videoPage = new ArrayList<>();
-              }
-              videoPage.add(video);
-              p.setVideos(videoPage);
-              pagePostRepository.save(p);
-          } else {
-              List<Video> videoUser = user.getVideos();
-              if (videoUser == null) {
-                  videoUser = new ArrayList<>();
-              }
-              videoUser.add(video);
-              user.setVideos(videoUser);
-          }
-
-          postRepository.save(post);
-          userRepository.save(user);
+//          List<Video> videoList = videoRepository.getAllVideoByPost(post);
+//          if (videoList == null || (long) videoList.size() == 0) {
+//              videoList = new ArrayList<>();
+//          }
+//          videoList.add(video);
+//          post.setVideos(videoList);
+//
+//          if (post.getPagePost() != null) {
+//            PagePost p = post.getPagePost();
+//            List<Video> videoPage = new ArrayList<>();
+//            if(p.getVideos()!=null)
+//            {
+//               videoPage = p.getVideos();
+//            }
+//
+//
+//              if (videoPage == null) {
+//                  videoPage = new ArrayList<>();
+//              }
+//              videoPage.add(video);
+//              p.setVideos(videoPage);
+//              pagePostRepository.save(p);
+//          } else {
+//              List<Video> videoUser = user.getVideos();
+//              if (videoUser == null) {
+//                  videoUser = new ArrayList<>();
+//              }
+//              videoUser.add(video);
+//              user.setVideos(videoUser);
+//          }
+//
+//          postRepository.save(post);
+//          userRepository.save(user);
           return video;
       } else {
           return null;
@@ -393,9 +435,11 @@ public class PostServiceIplm implements PostService {
     List<User> users = userRepository.findAll();
     User curU = userService.getCurrentUser();
     List<Page> pageFollow = new ArrayList<>();
+
     if(curU.getPagefollowed()!=null)
       pageFollow = curU.getPagefollowed();
     List<Post> newfeeds = new ArrayList<>();
+
     for (User u: users) {
       if (friendService.isFriend(curU, u)!=null && u.getPosts() != null) {
         newfeeds.addAll(u.getPosts());
@@ -412,15 +456,13 @@ public class PostServiceIplm implements PostService {
       List<Post> postPage = curU.getPosts();
       List<Post> postPageResult = new ArrayList<>();
       for (Post p: postPage ) {
-        if(p.getPagePost()!=null && !p.getPagePost().getAdmin().equals(Utils.getIdCurrentUser()))
+        if(p.getPagePost()==null)
         {
           postPageResult.add(p);
         }
       }
       newfeeds.addAll(postPageResult);
     }
-    if(curU.getPosts()!=null)
-      newfeeds.addAll(curU.getPosts());
     newfeeds.sort(Comparator.comparing(Post::getCreateDate).reversed());
     List<String> postLike = new ArrayList<>();
     for (Post p: newfeeds) {

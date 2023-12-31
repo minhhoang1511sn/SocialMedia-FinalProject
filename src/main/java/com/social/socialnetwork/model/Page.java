@@ -27,11 +27,11 @@ public class Page {
     private String introduce;
     private String contact;
     private String category;
-    @Field("posts")
+    @DBRef
     private List<Post> posts;
-    @Field("images")
+    @DBRef
     private List<Image> images;
-    @Field("videos")
+    @DBRef
     private List<Video> videos;
     private Date  createTime;
     private boolean enabled;
