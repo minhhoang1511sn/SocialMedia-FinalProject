@@ -12,7 +12,7 @@ public interface FriendService {
 
      List<User> suggestFriend();
 
-     void saveFriend(User userDto1, String id) throws NullPointerException;
+     boolean saveFriend(User userDto1, String id) throws NullPointerException;
 
      boolean DontAccept(String friendId);
 

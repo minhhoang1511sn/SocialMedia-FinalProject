@@ -78,12 +78,15 @@ public class FriendServiceIplm implements FriendService {
   }
 
   @Override
-  public void saveFriend(User userDto1, String id) throws NullPointerException {
+  public boolean saveFriend(User userDto1, String id) throws NullPointerException {
 
     User userFriend = userRepository.findUserById(id);
     User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
     List<String> friendUserFriend = new ArrayList<>();
     List<String> curUserFriend = new ArrayList<>();
+    List<String> curUserReq = new ArrayList<>();
+    List<String> friendUserReq = new ArrayList<>();
+
     if(userFriend!=null && userFriend.getUserFriend()!=null)
     {
       friendUserFriend = userFriend.getUserFriend();
@@ -93,40 +96,38 @@ public class FriendServiceIplm implements FriendService {
     {
       curUserFriend = curUser.getUserFriend();
     }
-    if(friendUserFriend.contains(curUser.getId()) && curUserFriend.contains(userFriend.getId()))
-    {
 
+    if(userFriend!=null && userFriend.getUserRequest()!=null)
+    {
+      friendUserReq = userFriend.getUserRequest();
     }
 
-      List<String> userFrReq = userFriend.getUserRequest();
-      List<String> userReq = curUser.getUserRequest();
-//      boolean check1 = userFrReq.contains(curUser.getId());
-//      boolean check2 = userReq.contains(UserFriend.getId());
-//      if (!check1 && !check2) {
-//        List<String> UserFriendReq = UserFriend.getUserRequest();
-//        UserFriendReq.add(curUser.getId());
-//        UserFriend.setUserRequest(UserFriendReq);
-//        userRepository.save(UserFriend);
-//      } else {
-//        List<String> curFriend = new ArrayList<>();
-//        List<String> uFrFriend = new ArrayList<>();
-//        List<String> curUserReq = curUser.getUserRequest();
-//        if (curUser.getUserFriend() != null) {
-//          curUser.setUserFriend(curUser.getUserFriend());
-//        }
-//        if (UserFriend.getUserFriend() != null) {
-//          UserFriend.setUserFriend(UserFriend.getUserFriend());
-//        }
-//        curUserReq.remove(UserFriend.getId());
-//        curFriend.add(UserFriend.getId());
-//        uFrFriend.add(curUser.getId());
-//        curUser.setUserFriend(curFriend);
-//        UserFriend.setUserFriend(uFrFriend);
-//        curUser.setUserRequest(curUserReq);
-//        userRepository.save(curUser);
-//        userRepository.save(UserFriend);
-//      }
-//    }
+    if(curUser!=null && curUser.getUserRequest()!=null)
+    {
+      curUserReq = curUser.getUserRequest();
+    }
+    if((!friendUserFriend.contains(curUser.getId()) && !curUserFriend.contains(userFriend.getId()))
+      && !friendUserReq.contains(curUser.getId()) && !curUserReq.contains(userFriend.getId()))
+    {
+      List<String> UserFriendReq = new ArrayList<>();
+      if(userFriend.getUserRequest()!=null)
+      UserFriendReq = userFriend.getUserRequest();
+      UserFriendReq.add(curUser.getId());
+      userFriend.setUserRequest(UserFriendReq);
+      userRepository.save(userFriend);
+    }
+    else {
+      curUserReq.remove(userFriend.getId());
+      curUserFriend.add(userFriend.getId());
+      friendUserFriend.add(curUser.getId());
+      curUser.setUserFriend(curUserFriend);
+      userFriend.setUserFriend(friendUserFriend);
+      curUser.setUserRequest(curUserReq);
+      userRepository.save(curUser);
+      userRepository.save(userFriend);
+      return  true;
+    }
+    return false;
   }
 
   @Override
@@ -149,7 +150,7 @@ public class FriendServiceIplm implements FriendService {
   @Override
   public String isFriend(User user1, User user2) {
     User UserFriend = userRepository.findUserById(user2.getId());
-    User curUser = userRepository.findUserById(user1.getId());
+    User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
     List<String> curUserFriendReq = new ArrayList<>();
     List<String> userFriendReq = new ArrayList<>();
     List<String> userFriend = new ArrayList<>();
@@ -171,7 +172,6 @@ public class FriendServiceIplm implements FriendService {
       }
     }
 
-      assert curUser != null;
       if ( userFriend.contains(curUser.getId()) && curUserFriend.contains(UserFriend.getId())) {
           return "you and "+user2Nm+" is a friend";
       }
@@ -183,7 +183,8 @@ public class FriendServiceIplm implements FriendService {
         if (!userFriendReq.contains(curUser.getId()) && !curUserFriendReq.contains(UserFriend.getId())) {
           return "you and "+user2Nm+" don't have friend request";
         } else {
-          if (userFriend.contains(curUser.getId()) && !curUserFriend.contains(UserFriend.getId())) {
+          if (userFriendReq.contains(curUser.getId()) &&
+              !curUserFriendReq.contains(UserFriend.getId())) {
             return "you have been sent friend request to  "+user2Nm;
           } else {
             return  user2Nm+" sent friend request to you";

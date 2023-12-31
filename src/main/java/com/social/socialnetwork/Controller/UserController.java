@@ -111,9 +111,11 @@ public class UserController {
             User curUser = userRepository.findUserById(Utils.getIdCurrentUser());
             User friend = userRepository.findUserById(friendId);
              isFriend = friendService.isFriend(curUser, friend);
+            return isFriend;
+        }
+        else
+            return "cannot check friend yourself";
 
-
-        }return isFriend;
     }
     @GetMapping("/mutual-friends")
     public ResponseEntity<?> MutualFriends(@RequestParam("userId") String userId){
@@ -127,11 +129,38 @@ public class UserController {
         {
             User  currentUser = userService.findById(Utils.getIdCurrentUser());
             User  friendUser = userService.findById(friendId);
-            friendService.saveFriend(currentUser,friendId);
-            if(friendService.isFriend(currentUser,friendUser)!=null && currentUser.getUserFriend()!=null && currentUser.getUserFriend().contains(friendId))
+            List<String> uFriend = new ArrayList<>();
+            if(friendUser.getUserRequest()!=null)
+            {
+                uFriend = friendUser.getUserRequest();
+            }
+            List<String> friendListUser = new ArrayList<>();
+            List<String> friendListFriendUser = new ArrayList<>();
+            if(friendUser.getUserFriend()!=null)
+            {
+                friendListFriendUser = friendUser.getUserFriend();
+            }
+
+            if(currentUser.getUserFriend()!=null)
+            {
+                friendListUser = currentUser.getUserFriend();
+            }
+            if(friendListUser.contains(friendId) || friendListFriendUser.contains(currentUser.getId()))
+            {
+                return ResponseEntity.ok("You have been friend to" + friendUser.getFirstName()+ " "+friendUser.getLastName());
+            }
+            if(uFriend.contains(currentUser.getId()))
+            {
+                uFriend.remove(currentUser.getId());
+                friendUser.setUserRequest(uFriend);
+                userRepository.save(friendUser);
+                return ResponseEntity.ok("You have been remove friend request to" + friendUser.getFirstName()+ " "+friendUser.getLastName());
+            }
+            boolean check = friendService.saveFriend(currentUser,friendId);
+            if(check)
                 return ResponseEntity.ok("Friend added successfully");
             else
-                return ResponseEntity.ok("FriendRequest is sent");
+                return ResponseEntity.ok("You send friend Request to " + friendUser.getFirstName() +" "+ friendUser.getLastName()+" successfully");
         }
        else
             return ResponseEntity.ok("Can't add friend yourself");
