@@ -456,7 +456,7 @@ public class PostServiceIplm implements PostService {
     }
 
     for (Page p : pageFollow) {
-      if (p.getPosts() != null) {
+      if (p.getPosts() != null && curU.getPagefollowed().contains(p)) {
         newfeeds.addAll(p.getPosts());
       }
     }
