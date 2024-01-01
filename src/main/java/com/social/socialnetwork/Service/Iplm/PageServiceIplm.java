@@ -249,8 +249,8 @@ public class PageServiceIplm implements PageService {
   }
 
   @Override
-  public Page followPage(PageReq pageReq) {
-    Page page = pageRepository.getById(pageReq.getId());
+  public Page followPage(String pageId) {
+    Page page = pageRepository.getById(pageId);
     User user = userRepository.findUserById(Utils.getIdCurrentUser());
     if(user.getPagefollowed()==null)
     {

@@ -119,9 +119,9 @@ public class PageController {
             return  ResponseEntity.ok().body(new ResponseDTO(false,"Page cannot enabled",
                     null));
     }
-    @PutMapping("/follow-page")
-    public ResponseEntity<?> followPage(@RequestBody PageReq pageReq){
-        Page p = pageService.followPage(pageReq);
+    @PutMapping("/follow-page/{pageId}")
+    public ResponseEntity<?> followPage(@PathVariable("pageId") String pageId){
+        Page p = pageService.followPage(pageId);
         if(p!=null)
             return  ResponseEntity.ok().body(new ResponseDTO(true,"User has been follow success",
                 null));
