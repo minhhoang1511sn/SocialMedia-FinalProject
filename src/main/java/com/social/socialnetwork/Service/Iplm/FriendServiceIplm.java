@@ -77,7 +77,7 @@ public class FriendServiceIplm implements FriendService {
     user.forEach(
         u -> {
           String user2Nm = u.getFirstName() + " " + u.getLastName();
-          if (isFriend(curU, u).equals("you and "+user2Nm+" is a friend")  && u != curU) {
+          if (!isFriend(curU, u).equals("you and "+user2Nm+" is a friend")  && u != curU) {
             suggestFriend.add(u);
           }
         }
