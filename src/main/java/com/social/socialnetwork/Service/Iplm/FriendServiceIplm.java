@@ -67,9 +67,11 @@ public class FriendServiceIplm implements FriendService {
     List<User> user = userRepository.findAll();
     User curU = userRepository.findUserById(Utils.getIdCurrentUser());
     List<User> suggestFriend = new ArrayList<>();
+
     user.forEach(
         u -> {
-          if (isFriend(curU, u)== null && u != curU) {
+          String user2Nm = u.getFirstName() + " " + u.getLastName();
+          if (isFriend(curU, u).equals("you and "+user2Nm+" is a friend")  && u != curU) {
             suggestFriend.add(u);
           }
         }
