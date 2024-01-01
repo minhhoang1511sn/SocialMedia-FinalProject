@@ -415,4 +415,27 @@ public class UserServiceIplm implements UserService {
         return activeFriend;
     }
 
+    @Override
+    public boolean deleteUser(String userId) {
+        User u = userRepository.findUserById(userId);
+
+        if (u != null) {
+            List<Post> posts = postRepository.getAllPostByUser(userId);
+            List<Comment> commentList = commentRepository.getAllCommentByUserComment(userId);
+            Page page = pageRepository.findByPageByAdmin(u);
+            if(page!=null )
+                pageRepository.delete(page);
+            if(posts!=null )
+                postRepository.deleteAll(posts);
+            if(commentList!=null )
+                commentRepository.deleteAll(commentList);
+
+            userRepository.delete(u);
+            return true;
+        } else {
+            throw new AppException(404, "Comment ID not found");
+        }
+
+    }
+
 }

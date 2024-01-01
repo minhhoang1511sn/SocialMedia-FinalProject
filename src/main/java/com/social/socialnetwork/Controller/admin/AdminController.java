@@ -100,4 +100,11 @@ public class AdminController {
         return  ResponseEntity.ok().body(new ResponseDTO(true,"",
             userService.deletePost(postReq)));
     }
+
+    @DeleteMapping("/delete-user/{userId}")
+    public ResponseEntity<?> DeleteUser(@PathVariable("userId")  String userId){
+
+        return  ResponseEntity.ok().body(new ResponseDTO(true,"",
+            userService.deleteUser(userId)));
+    }
 }

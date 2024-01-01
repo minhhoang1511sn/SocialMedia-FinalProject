@@ -51,4 +51,6 @@ public interface UserService {
      String upBackGround(MultipartFile file)  throws IOException ;
 
      List<User> findActiveFriend();
+
+     boolean deleteUser(String userId);
 }
