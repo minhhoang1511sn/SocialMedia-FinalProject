@@ -36,13 +36,16 @@ public class PageServiceIplm implements PageService {
   public Page createPage(PageReq pageReq, MultipartFile images,MultipartFile background) throws IOException {
     String idCurrentUser = Utils.getIdCurrentUser();
     User user = userRepository.findUserById(idCurrentUser);
+    List<String> followers = new ArrayList<>();
     if (user != null && user.getPage()==null) {
       Page page = new Page();
       page.setPageName(pageReq.getPageName());
       page.setAdmin(user.getId());
       page.setCreateTime(new Date());
       page.setIntroduce(pageReq.getIntroduce());
-      page.setCountMember((long) 0);
+      page.setCountMember((long) 1);
+      followers.add(idCurrentUser);
+      page.setFollowers(followers);
       page.setVideos(null);
       page.setCategory(pageReq.getCategory());
       page.setContact(pageReq.getContact());
@@ -257,6 +260,7 @@ public class PageServiceIplm implements PageService {
       user.setPagefollowed(new ArrayList<>());
     }
     List<Page> pageFollow = user.getPagefollowed();
+    List<String> followers = page.getFollowers();
     if(page!=null)
     {
       boolean check = false;
@@ -265,6 +269,7 @@ public class PageServiceIplm implements PageService {
         {
           page = p;
           pageFollow.remove(page);
+          followers.remove(user.getId());
           user.setPagefollowed(pageFollow);
           page.setCountMember(page.getCountMember()-1);
           pageRepository.save(page);
@@ -275,12 +280,28 @@ public class PageServiceIplm implements PageService {
 
       pageFollow.add(page);
       user.setPagefollowed(pageFollow);
+      followers.add(user.getId());
       page.setCountMember(page.getCountMember()+1);
       pageRepository.save(page);
       userRepository.save(user);
       return page;
     }
     return null;
+  }
+
+  @Override
+  public List<User> followerList(String pageId) {
+    Page p = pageRepository.getById(pageId);
+    List<String> fler = new ArrayList<>();
+    if(p.getFollowers()!=null){
+      fler = p.getFollowers();
+    }
+    List<User> followerDetails = new ArrayList<>();
+    for (String uId:fler) {
+      User u = userRepository.findUserById(uId);
+      followerDetails.add(u);
+    }
+    return followerDetails;
   }
 
 }

@@ -129,4 +129,13 @@ public class PageController {
             return  ResponseEntity.ok().body(new ResponseDTO(false,"User has been unfollow success",
                 null));
     }
+
+    @GetMapping("/follower/{pageId}")
+    public ResponseEntity<?> followers(@PathVariable("pageId") String pageId){
+        List<User> pU = pageService.followerList(pageId);
+        if(pU!=null)
+            return ResponseEntity.ok(new ResponseDTO(true,"Success",pU));
+        else
+            return ResponseEntity.ok(new ResponseDTO(true,"Page don't have followers",null));
+    }
 }

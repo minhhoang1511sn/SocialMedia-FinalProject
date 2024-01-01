@@ -23,4 +23,6 @@ public interface PageService {
 
     Page followPage(String pageId);
 
+    List<User> followerList(String pageId);
+
 }

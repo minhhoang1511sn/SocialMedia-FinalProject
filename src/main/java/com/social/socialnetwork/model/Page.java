@@ -33,6 +33,7 @@ public class Page {
     private List<Image> images;
     @DBRef
     private List<Video> videos;
+    private List<String> followers;
     private Date  createTime;
     private boolean enabled;
 }
