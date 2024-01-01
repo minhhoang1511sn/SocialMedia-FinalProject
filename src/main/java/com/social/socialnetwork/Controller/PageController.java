@@ -129,14 +129,4 @@ public class PageController {
             return  ResponseEntity.ok().body(new ResponseDTO(false,"User has been unfollow success",
                 null));
     }
-    @PutMapping("/un-follow-page/{pageId}")
-    public ResponseEntity<?> unFollowPage(@PathVariable String pageId){
-        boolean p = pageService.unFollowed(pageId);
-        if(p)
-            return  ResponseEntity.ok().body(new ResponseDTO(true,"You has been unfollow success",
-                    null));
-        else
-            return  ResponseEntity.ok().body(new ResponseDTO(false,"You cannot unFollowed",
-                    null));
-    }
 }

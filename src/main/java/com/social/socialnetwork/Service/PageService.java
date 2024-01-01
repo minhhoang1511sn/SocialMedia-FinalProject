@@ -23,5 +23,4 @@ public interface PageService {
 
     Page followPage(PageReq pageReq);
 
-    boolean unFollowed(String pageId);
 }

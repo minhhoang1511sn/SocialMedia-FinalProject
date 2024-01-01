@@ -272,51 +272,15 @@ public class PageServiceIplm implements PageService {
           return null;
         }
       }
-//      if(!check)
-//      {
-//        pageFollow.add(page);
-//        user.setPagefollowed(pageFollow);
-//        page.setCountMember(page.getCountMember()+1);
-//        pageRepository.save(page);
-//        userRepository.save(user);
-//        return page;
-//      }
-//      else {
+
       pageFollow.add(page);
       user.setPagefollowed(pageFollow);
       page.setCountMember(page.getCountMember()+1);
       pageRepository.save(page);
       userRepository.save(user);
       return page;
-
-
-//      }
     }
     return null;
   }
 
-  @Override
-  public boolean unFollowed(String pageId) {
-    Page page = pageRepository.getById(pageId);
-    User user = userRepository.findUserById(Utils.getIdCurrentUser());
-    List<Page> pageFollow = user.getPagefollowed();
-
-    if(page!=null )
-    {
-      for (Page p :pageFollow)
-//      if(user.getPagefollowed().contains(page))
-      {
-        if(p.getId().equals(pageId))
-        {
-          pageFollow.remove(page);
-          user.setPagefollowed(pageFollow);
-          userRepository.save(user);
-          return true;
-        }
-
-      }
-
-    }
-    return false;
-  }
 }
