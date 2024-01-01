@@ -256,14 +256,67 @@ public class PageServiceIplm implements PageService {
     {
       user.setPagefollowed(new ArrayList<>());
     }
-    if(page!=null  && !user.getPagefollowed().contains(page))
+    List<Page> pageFollow = user.getPagefollowed();
+    if(page!=null)
     {
-      List<Page> pageFollow = user.getPagefollowed();
+      boolean check = false;
+      for (Page p:pageFollow) {
+        if(p.getId().equals(page.getId()))
+        {
+          page = p;
+          pageFollow.remove(page);
+          user.setPagefollowed(pageFollow);
+          page.setCountMember(page.getCountMember()-1);
+          pageRepository.save(page);
+          userRepository.save(user);
+          return null;
+        }
+      }
+//      if(!check)
+//      {
+//        pageFollow.add(page);
+//        user.setPagefollowed(pageFollow);
+//        page.setCountMember(page.getCountMember()+1);
+//        pageRepository.save(page);
+//        userRepository.save(user);
+//        return page;
+//      }
+//      else {
       pageFollow.add(page);
       user.setPagefollowed(pageFollow);
+      page.setCountMember(page.getCountMember()+1);
+      pageRepository.save(page);
       userRepository.save(user);
       return page;
+
+
+//      }
     }
     return null;
+  }
+
+  @Override
+  public boolean unFollowed(String pageId) {
+    Page page = pageRepository.getById(pageId);
+    User user = userRepository.findUserById(Utils.getIdCurrentUser());
+    List<Page> pageFollow = user.getPagefollowed();
+
+    if(page!=null )
+    {
+      for (Page p :pageFollow)
+//      if(user.getPagefollowed().contains(page))
+      {
+        if(p.getId().equals(pageId))
+        {
+          pageFollow.remove(page);
+          user.setPagefollowed(pageFollow);
+          userRepository.save(user);
+          return true;
+        }
+
+      }
+
+    }
+    return false;
   }
 }

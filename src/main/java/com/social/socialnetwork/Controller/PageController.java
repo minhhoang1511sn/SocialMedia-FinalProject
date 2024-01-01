@@ -63,8 +63,8 @@ public class PageController {
             return ResponseEntity.ok(new ResponseDTO(true,"you don't follow any page",null));
         }
     }
-    @GetMapping("/is-followed")
-    public ResponseEntity<?> isFollowedPage(@RequestParam String pageId){
+    @GetMapping("/is-followed/{pageId}")
+    public ResponseEntity<?> isFollowedPage(@PathVariable String pageId){
         boolean check = pageService.isFollowed(pageId);
         if(check)
             return ResponseEntity.ok(new ResponseDTO(true,"is Followed",null));
@@ -126,7 +126,17 @@ public class PageController {
             return  ResponseEntity.ok().body(new ResponseDTO(true,"User has been follow success",
                 null));
         else
-            return  ResponseEntity.ok().body(new ResponseDTO(false,"User cannot followed",
+            return  ResponseEntity.ok().body(new ResponseDTO(false,"User has been unfollow success",
                 null));
+    }
+    @PutMapping("/un-follow-page/{pageId}")
+    public ResponseEntity<?> unFollowPage(@PathVariable String pageId){
+        boolean p = pageService.unFollowed(pageId);
+        if(p)
+            return  ResponseEntity.ok().body(new ResponseDTO(true,"You has been unfollow success",
+                    null));
+        else
+            return  ResponseEntity.ok().body(new ResponseDTO(false,"You cannot unFollowed",
+                    null));
     }
 }

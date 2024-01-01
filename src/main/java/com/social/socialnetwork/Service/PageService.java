@@ -22,4 +22,6 @@ public interface PageService {
     String upBackGround(MultipartFile file)  throws IOException ;
 
     Page followPage(PageReq pageReq);
+
+    boolean unFollowed(String pageId);
 }
