@@ -1,8 +1,10 @@
 package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.CommentService;
+import com.social.socialnetwork.Service.NotificationService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.CommentReq;
+import com.social.socialnetwork.dto.NotificationDTO;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
@@ -28,6 +30,7 @@ public class CommentServiceIplm implements CommentService {
   private final UserCommentRepository userCommentRepository;
   private final PageRepository pageRepository;
   private final ReportRepository reportRepository;
+  private final NotificationService notificationService;
 
   @Override
   public Comment findById(String id) {
@@ -71,6 +74,15 @@ public class CommentServiceIplm implements CommentService {
       comments.add(comment);
       post.setComments(comments);
       postRepository.save(post);
+
+      //Notification
+      NotificationDTO notificationDTO = new NotificationDTO();
+      notificationDTO.setContent(userComment.getFirstName() + " "+userComment.getLastName() +"is comment on your post");
+      notificationDTO.setCreateTime(new Date());
+      notificationDTO.setTypeNotifications(TypeNotifications.POSTNOTIFICATIONS);
+      User userP = userRepository.findUserById(post.getUserPost().getUserId());
+      notificationDTO.setUser(userP);
+      notificationService.newNotificaition(notificationDTO);
       return comment;
     } else {
       throw new AppException(404, "Post or Comment not exits.");
