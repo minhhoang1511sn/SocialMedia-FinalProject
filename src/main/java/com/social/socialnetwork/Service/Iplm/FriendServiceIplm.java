@@ -1,11 +1,15 @@
 package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.FriendService;
+import com.social.socialnetwork.Service.NotificationService;
+import com.social.socialnetwork.dto.NotificationDTO;
 import com.social.socialnetwork.model.Friend;
+import com.social.socialnetwork.model.TypeNotifications;
 import com.social.socialnetwork.model.User;
 import com.social.socialnetwork.repository.FriendRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,8 @@ public class FriendServiceIplm implements FriendService {
   private final FriendRepository friendRepository;
 
   private final UserRepository userRepository;
+
+  private final NotificationService notificationService;
 
 
   @Override
@@ -71,7 +77,7 @@ public class FriendServiceIplm implements FriendService {
     user.forEach(
         u -> {
           String user2Nm = u.getFirstName() + " " + u.getLastName();
-          if (isFriend(curU, u).equals("you and "+user2Nm+" is a friend")  && u != curU) {
+          if (!isFriend(curU, u).equals("you and "+user2Nm+" is a friend")  && u != curU) {
             suggestFriend.add(u);
           }
         }
@@ -116,6 +122,15 @@ public class FriendServiceIplm implements FriendService {
       UserFriendReq = userFriend.getUserRequest();
       UserFriendReq.add(curUser.getId());
       userFriend.setUserRequest(UserFriendReq);
+
+      //Notification
+      NotificationDTO notificationDTO = new NotificationDTO();
+      notificationDTO.setContent(curUser.getFirstName() + " "+curUser.getLastName() +"is sent you friend request");
+      notificationDTO.setCreateTime(new Date());
+      notificationDTO.setTypeNotifications(TypeNotifications.ADDFRIEND);
+      User userP = userRepository.findUserById(userFriend.getId());
+      notificationDTO.setUser(userP);
+      notificationService.newNotificaition(notificationDTO);
       userRepository.save(userFriend);
     }
     else {

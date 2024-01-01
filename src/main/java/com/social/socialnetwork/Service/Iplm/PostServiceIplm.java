@@ -2,8 +2,10 @@ package com.social.socialnetwork.Service.Iplm;
 
 import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
 import com.social.socialnetwork.Service.FriendService;
+import com.social.socialnetwork.Service.NotificationService;
 import com.social.socialnetwork.Service.PostService;
 import com.social.socialnetwork.Service.UserService;
+import com.social.socialnetwork.dto.NotificationDTO;
 import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
@@ -33,6 +35,7 @@ public class PostServiceIplm implements PostService {
   private final PageRepository pageRepository;
   private final PostLikeRepository postLikeRepository;
   private final PagePostRepository pagePostRepository;
+  private final NotificationService notificationService;
 
   @Override
   public Post createPost(PostReq postReq, List<MultipartFile> images, List<MultipartFile> video, List<String> tagsId) {
@@ -519,6 +522,15 @@ public class PostServiceIplm implements PostService {
       ulike.add(postLike.getPostId());
       u.setPostLike(ulike);
       userRepository.save(u);
+
+      //Notification
+      NotificationDTO notificationDTO = new NotificationDTO();
+      notificationDTO.setContent(post.getUserPost().getFirstName() + " "+post.getUserPost().getLastName() +"is like your post");
+      notificationDTO.setCreateTime(new Date());
+      notificationDTO.setTypeNotifications(TypeNotifications.POSTNOTIFICATIONS);
+      User userP = userRepository.findUserById(post.getUserPost().getUserId());
+      notificationDTO.setUser(userP);
+      notificationService.newNotificaition(notificationDTO);
     }
     return post;
   }

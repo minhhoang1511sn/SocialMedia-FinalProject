@@ -7,6 +7,7 @@ import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.NotificationRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
+import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -23,10 +24,10 @@ public class NotificationServiceIplm implements NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final ModelMapper modelMapper;
-    private final SimpMessagingTemplate messagingTemplate;
+
     @Override
-    public List<Notification> getAllNotificationsByUser(String userId) {
-        User user = userRepository.findUserById(userId);
+    public List<Notification> getAllNotificationsByUser() {
+        User user = userRepository.findUserById(Utils.getIdCurrentUser());
         List<Notification> notifications = notificationRepository.getNotificationsByUser(user);
         return notifications;
     }
@@ -37,8 +38,7 @@ public class NotificationServiceIplm implements NotificationService {
         Notification notification = notificationRepository.findNotificationById(notificationDTO.getId());
         if(check)
         {
-            notification.setCreateTime(new Date());
-            notification.setIsRead(notificationDTO.getIsRead());
+            notification.setIsRead(true);
             return notification;
         }
         else throw new AppException(500, "Notification not found");
@@ -48,14 +48,14 @@ public class NotificationServiceIplm implements NotificationService {
     @Override
     public Notification newNotificaition(NotificationDTO notificationDTO) {
         Notification notification = modelMapper.map(notificationDTO, Notification.class);
-        User user = userRepository.findUserById(Utils.getIdCurrentUser());
+        User user = userRepository.findUserById(notificationDTO.getUser().getId());
+
         notification.setUser(user);
         notification.setCreateTime(new Date());
+        notification.setIsRead(false);
+        notification.setTypeNotifications(notificationDTO.getTypeNotifications());
+        notification.setContent(notification.getContent());
+
         return notificationRepository.save(notification);
-    }
-    @Override
-    public void sendNotificationToUserById(String userId, String message) {
-        // Sends a notification to a specific user identified by their ID
-        messagingTemplate.convertAndSendToUser(userId, "/topic/notification", message);
     }
 }

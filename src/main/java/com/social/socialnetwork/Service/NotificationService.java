@@ -8,9 +8,8 @@ import com.social.socialnetwork.model.User;
 import java.util.List;
 
 public interface NotificationService {
-    List<Notification> getAllNotificationsByUser(String userId);
+    List<Notification> getAllNotificationsByUser();
     Notification changeStatusNoti(NotificationDTO notificationDTO);
     Notification newNotificaition(NotificationDTO notificationDTO);
 
-  void sendNotificationToUserById(String userId, String message);
 }
