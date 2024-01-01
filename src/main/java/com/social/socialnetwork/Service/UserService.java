@@ -4,13 +4,7 @@ import com.social.socialnetwork.dto.CommentReq;
 import com.social.socialnetwork.dto.PageReq;
 import com.social.socialnetwork.dto.PostReq;
 import com.social.socialnetwork.dto.UserReq;
-import com.social.socialnetwork.model.Comment;
-import com.social.socialnetwork.model.ConfirmationCode;
-import com.social.socialnetwork.model.Image;
-import com.social.socialnetwork.model.Page;
-import com.social.socialnetwork.model.Post;
-import com.social.socialnetwork.model.User;
-import com.social.socialnetwork.model.UserMessage;
+import com.social.socialnetwork.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,9 +29,9 @@ public interface UserService {
      List<Image> getimgByUser(String userId);
      List<Image> getAllImageByUser(String userId);
 
-     List<Post> getPostReported();
-     List<Page> getPageReported();
-     List<Comment> getCommentReported();
+     List<Report> getPostReported();
+     List<Report> getPageReported();
+     List<Report> getCommentReported();
      boolean disabledPost(PostReq postReq);
 
      boolean disabledPage(PageReq pageReq);

@@ -14,10 +14,10 @@ import java.util.List;
 public interface ReportRepository extends MongoRepository<Report,String> {
 
   @Query("{$and: [{ 'comment': null }, { 'page': null }]}")
-  List<Post> getAllReportByPost();
+  List<Report> getAllReportByPost();
 
   @Query("{$and: [{ 'post': null }, { 'page': null }]}")
-  List<Comment> getAllReportByComment();
-  List<Page> getAllReportByPage();
+  List<Report> getAllReportByComment();
+  List<Report> getAllReportByPage();
 
 }

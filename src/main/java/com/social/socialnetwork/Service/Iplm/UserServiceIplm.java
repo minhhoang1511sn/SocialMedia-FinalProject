@@ -1,8 +1,6 @@
 package com.social.socialnetwork.Service.Iplm;
 
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
-import com.social.socialnetwork.Service.FriendService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.CommentReq;
 import com.social.socialnetwork.dto.PageReq;
@@ -12,7 +10,6 @@ import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
 import com.social.socialnetwork.repository.*;
 import com.social.socialnetwork.utils.Utils;
-import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -233,18 +230,18 @@ public class UserServiceIplm implements UserService {
     }
 
     @Override
-    public List<Post> getPostReported() {
+    public List<Report> getPostReported() {
         return reportRepository.getAllReportByPost();
 
     }
 
     @Override
-    public List<Page> getPageReported() {
+    public List<Report> getPageReported() {
         return reportRepository.getAllReportByPage();
     }
 
     @Override
-    public List<Comment> getCommentReported() {
+    public List<Report> getCommentReported() {
         return reportRepository.getAllReportByComment();
     }
 
