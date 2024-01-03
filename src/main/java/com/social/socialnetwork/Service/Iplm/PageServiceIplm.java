@@ -263,15 +263,15 @@ public class PageServiceIplm implements PageService {
     List<String> followers = page.getFollowers();
     if(page!=null)
     {
-      boolean check = false;
       for (Page p:pageFollow) {
-        if(p.getId().equals(page.getId()))
+        if(p.getId().equals(pageId))
         {
           page = p;
           pageFollow.remove(page);
           followers.remove(user.getId());
           user.setPagefollowed(pageFollow);
           page.setCountMember(page.getCountMember()-1);
+          page.setFollowers(followers);
           pageRepository.save(page);
           userRepository.save(user);
           return null;
@@ -282,6 +282,7 @@ public class PageServiceIplm implements PageService {
       user.setPagefollowed(pageFollow);
       followers.add(user.getId());
       page.setCountMember(page.getCountMember()+1);
+      page.setFollowers(followers);
       pageRepository.save(page);
       userRepository.save(user);
       return page;
