@@ -20,6 +20,10 @@ public class Message {
     private User sender;
     @Embedded
     private User receiver;
+    @Embedded
+    private UserMessage uSender;
+    @Embedded
+    private UserMessage uReceiver;
     private String message;
     private Date createTime;
 }
