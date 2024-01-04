@@ -72,7 +72,6 @@ public class MessageServiceIplm implements MessageService {
 
         return imgUrl.getImgLink();
     }
-    
     @Override
     public Message postMessage(MessageDTO messageDTO, MultipartFile image) throws IOException {
         User sender = userService.getCurrentUser();
