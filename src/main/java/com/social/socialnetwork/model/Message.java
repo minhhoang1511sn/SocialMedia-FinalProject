@@ -25,7 +25,7 @@ public class Message {
     @Embedded
     private UserMessage uReceiver;
     @Embedded
-    private Image image;
+    private Image img;
     private String message;
     private Date createTime;
 }

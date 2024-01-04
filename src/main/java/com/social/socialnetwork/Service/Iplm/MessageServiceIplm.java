@@ -89,7 +89,7 @@ public class MessageServiceIplm implements MessageService {
             Image img = new Image();
             img.setImgLink(sendImage(image));
 
-            message.setImage(img);
+            message.setImg(img);
         }
 
         if(sender.getImage()!=null)
