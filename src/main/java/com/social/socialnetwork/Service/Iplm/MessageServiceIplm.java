@@ -1,12 +1,18 @@
 package com.social.socialnetwork.Service.Iplm;
 
+import com.social.socialnetwork.Service.Cloudinary.CloudinaryUpload;
 import com.social.socialnetwork.Service.MessageService;
 import com.social.socialnetwork.Service.UserService;
 import com.social.socialnetwork.dto.MessageDTO;
+import com.social.socialnetwork.exception.AppException;
 import com.social.socialnetwork.model.*;
+import com.social.socialnetwork.repository.ImageRepository;
 import com.social.socialnetwork.repository.MessageRepository;
 import com.social.socialnetwork.repository.UserMessageRepository;
 import com.social.socialnetwork.repository.UserRepository;
+import com.social.socialnetwork.repository.VideoRepository;
+import com.social.socialnetwork.utils.Utils;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -24,6 +31,8 @@ public class MessageServiceIplm implements MessageService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final UserMessageRepository userMessageRepository;
+    private final CloudinaryUpload cloudinaryUpload;
+    private final ImageRepository imageRepository;
     @Override
     public Collection<MessageDTO> findAllRecentMessages(String id) {
         List<Message> all = messageRepository.findAllRecentMessages(id);
@@ -51,11 +60,23 @@ public class MessageServiceIplm implements MessageService {
         return messageDTO;
     }
 
+    public String sendImage(MultipartFile file) throws IOException {
+        String id = Utils.getIdCurrentUser();
+        User user = userRepository.findUserById(id);
+        if (user == null)
+            throw new AppException(404, "User ID not found");
+        Image imgUrl = new Image();
+        imgUrl.setImgLink(cloudinaryUpload.uploadImage(file,null));
+        imgUrl.setPostType(PostType.FRIEND);
+        imageRepository.save(imgUrl);
 
+        return imgUrl.getImgLink();
+    }
+    
     @Override
-    public Message postMessage(MessageDTO messageDTO) {
+    public Message postMessage(MessageDTO messageDTO, MultipartFile image) throws IOException {
         User sender = userService.getCurrentUser();
-        User receiver = userRepository.findUserById(messageDTO.getReceiver().getId());
+        User receiver = userRepository.findUserById(messageDTO.getReceiverId());
         UserMessage uSender = new UserMessage();
         UserMessage uRReceiver = new UserMessage();
         Message message = new Message();
@@ -63,6 +84,15 @@ public class MessageServiceIplm implements MessageService {
         message.setMessage(messageDTO.getMessage());
         message.setUReceiver(uRReceiver);
         message.setUSender(uSender);
+
+        if(image!=null)
+        {
+            Image img = new Image();
+            img.setImgLink(sendImage(image));
+
+            message.setImage(img);
+        }
+
         if(sender.getImage()!=null)
             uSender.setAvatar(sender.getImage().getImgLink());
         if(receiver.getImage()!=null)

@@ -16,6 +16,6 @@ public class MessageDTO {
     @NotNull
     @Size(min=3, max = 3000)
     private String message;
-    private UserMessage sender;
-    private UserMessage receiver;
+    private String senderId;
+    private String receiverId;
 }

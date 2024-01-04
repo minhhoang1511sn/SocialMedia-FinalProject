@@ -2,6 +2,7 @@ package com.social.socialnetwork.Service;
 
 import com.social.socialnetwork.dto.MessageDTO;
 import com.social.socialnetwork.model.Message;
+import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
@@ -14,5 +15,5 @@ public interface MessageService {
 
     MessageDTO getRecentMessage(String id);
 
-    Message postMessage(MessageDTO messageDTO);
+    Message postMessage(MessageDTO messageDTO,MultipartFile image) throws IOException;
 }
