@@ -12,4 +12,5 @@ import java.util.List;
 public interface UserMessageRepository extends MongoRepository<UserMessage,String> {
 
     List<UserMessage> findAllByUserId(String id);
+    UserMessage findUserMessageByUserId(String userId);
 }

@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface MessageRepository  extends MongoRepository<Message,String> {
     @Query("{ $or: [ " +
-            "   { 'uSender.userId':'$userId', 'uReceiver.userId':'$companionId'}," +
-            "   { 'uSender.userId': '$companionId', 'uReceiver.userId':'$userId'}" +
-            "], $orderby: { 'createTime' : 1 } }")
+            "   { 'uSender.userId':?0, 'uReceiver.userId':?1}," +
+            "   { 'uSender.userId': ?1, 'uReceiver.userId':?0}" +
+            "] }")
     List<Message> findConversation(String userId, String companionId);
     Message findFirstBySenderIdOrReceiverIdOrderByIdDesc(String id, String id1);
     @Query("[" +

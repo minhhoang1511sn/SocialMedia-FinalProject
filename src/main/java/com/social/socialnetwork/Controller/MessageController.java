@@ -6,6 +6,7 @@ import com.social.socialnetwork.dto.MessageDTO;
 import com.social.socialnetwork.dto.ResponseDTO;
 import com.social.socialnetwork.model.Message;
 import com.social.socialnetwork.model.User;
+import com.social.socialnetwork.model.UserMessage;
 import com.social.socialnetwork.repository.MessageRepository;
 import com.social.socialnetwork.repository.UserRepository;
 import com.social.socialnetwork.utils.Utils;
@@ -62,8 +63,9 @@ public class MessageController {
             return ResponseEntity.ok(new ResponseDTO(false, e.getMessage(), null));
         }
     }
-    @GetMapping("/find-conversation")
-    public ResponseEntity<?> getConversation(@RequestParam String userId){
+    @GetMapping("/find-conversation/{userId}")
+    public ResponseEntity<?> getConversation(@PathVariable("userId") String userId){
+
         try {
             return ResponseEntity.ok(new ResponseDTO(true, "Success", messageService.findConversation(Utils.getIdCurrentUser(),userId)));
         } catch (Exception e) {
